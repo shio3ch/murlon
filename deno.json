@@ -1,0 +1,50 @@
+{
+  "lock": false,
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "check": "deno fmt --check && deno lint && deno check **/*.ts **/*.tsx",
+    "cli": "echo \"import '\\$0'\" | deno run --unstable -",
+    "build": "deno run -A dev.ts build",
+    "start": "deno run -A main.ts",
+    "dev": "deno run -A --watch=static/,routes/,islands/,components/,lib/ dev.ts",
+    "db:generate": "deno run -A npm:prisma generate",
+    "db:migrate": "deno run -A npm:prisma migrate dev",
+    "db:push": "deno run -A npm:prisma db push",
+    "db:studio": "deno run -A npm:prisma studio"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["fresh", "recommended"]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve"
+  },
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "@preact/signals": "https://esm.sh/@preact/signals@1.2.3",
+    "@preact/signals-core": "https://esm.sh/@preact/signals-core@1.5.1",
+    "tailwindcss": "npm:tailwindcss@3.4.1",
+    "tailwindcss/": "npm:tailwindcss@3.4.1/",
+    "tailwindcss/plugin": "npm:tailwindcss@3.4.1/plugin.js",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "hono": "https://deno.land/x/hono@v4.1.4/mod.ts",
+    "hono/": "https://deno.land/x/hono@v4.1.4/",
+    "@prisma/client": "npm:@prisma/client@5.10.2"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+  },
+  "exclude": [
+    "**/_fresh/*"
+  ]
+}
