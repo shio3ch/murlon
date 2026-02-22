@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: murlon
+      POSTGRES_USER: murlon
+      POSTGRES_PASSWORD: murlon
+    volumes:
+      - murlon-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murlon -d murlon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - murlon-ollama-data:/root/.ollama
+
+volumes:
+  murlon-db-data:
+  murlon-ollama-data:

@@ -10,7 +10,10 @@
     "db:generate": "deno run -A npm:prisma generate",
     "db:migrate": "deno run -A npm:prisma migrate dev",
     "db:push": "deno run -A npm:prisma db push",
-    "db:studio": "deno run -A npm:prisma studio"
+    "db:studio": "deno run -A npm:prisma studio",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:ollama:pull": "docker compose exec ollama ollama pull gemma3"
   },
   "lint": {
     "rules": {
