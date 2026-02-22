@@ -110,7 +110,19 @@ default_modes:
 
 # initial prompt for the project. It will always be given to the LLM upon activating the project
 # (contrary to the memories, which are loaded on demand).
-initial_prompt: ""
+initial_prompt: |
+  プロジェクト仕様書は spec/ 配下に分割管理されています。
+  目次: spec/README.md
+  主要ファイル:
+    - spec/01-product-overview.md（プロダクト概要）
+    - spec/02-features.md（機能一覧）
+    - spec/03-screens.md（画面構成）
+    - spec/04-data-model.md（データモデル）
+    - spec/05-tech-stack.md（技術スタック）
+    - spec/06-architecture.md（アーキテクチャ方針・DDD）
+    - spec/07-non-functional.md（非機能要件）
+    - spec/08-development-phases.md（開発フェーズ）
+  仕様を確認する際は、関連するファイルを read_file や find_file で読み込んでください。
 
 # override of the corresponding setting in serena_config.yml, see the documentation there.
 # If null or missing, the value from the global config is used.

@@ -4,7 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-murlon は「書くだけで日報が完成する」Webアプリ。分報（短い投稿）をAnthhropic Claude APIで自動集約し、日報・週報・月報を生成する。
+murlon は「書くだけで日報が完成する」Webアプリ。分報（短い投稿）をAnthropic Claude APIで自動集約し、日報・週報・月報を生成する。
+
+## 仕様書
+
+詳細な仕様は `spec/` 配下に分割管理している。目次は `spec/README.md` を参照。
+
+| ファイル | 内容 |
+| --- | --- |
+| `spec/01-product-overview.md` | プロダクト概要 |
+| `spec/02-features.md` | 機能一覧 |
+| `spec/03-screens.md` | 画面構成 |
+| `spec/04-data-model.md` | データモデル |
+| `spec/05-tech-stack.md` | 技術スタック |
+| `spec/06-architecture.md` | アーキテクチャ方針（DDD） |
+| `spec/07-non-functional.md` | 非機能要件 |
+| `spec/08-development-phases.md` | 開発フェーズ |
 
 ## 技術スタック
 
