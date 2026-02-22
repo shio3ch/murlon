@@ -1,0 +1,6 @@
+_fresh/
+node_modules/
+generated/
+.env
+*.local
+.DS_Store
