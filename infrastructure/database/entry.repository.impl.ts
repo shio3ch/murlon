@@ -12,6 +12,7 @@ function toEntry(record: {
   templateType: string | null;
   createdAt: Date;
   updatedAt: Date;
+  user?: { id: string; name: string; avatarUrl: string | null };
 }): Entry {
   return {
     id: record.id,
@@ -23,6 +24,9 @@ function toEntry(record: {
     templateType: record.templateType,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    ...(record.user && {
+      author: { id: record.user.id, name: record.user.name, avatarUrl: record.user.avatarUrl },
+    }),
   };
 }
 
@@ -57,6 +61,7 @@ export class PrismaEntryRepository implements IEntryRepository {
       orderBy: { createdAt: orderBy },
       take: limit,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
     });
 
     return records.map(toEntry);

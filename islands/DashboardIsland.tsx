@@ -77,10 +77,29 @@ function EntryItem({ entry, onDelete, onUpdate, projectName, currentUserId }: En
 
   return (
     <div class="group flex gap-3 py-2.5 px-1 hover:bg-gray-50 rounded-lg transition-colors">
-      <span class="text-xs text-gray-400 mt-0.5 shrink-0 w-12 text-right">
-        {formatTime(entry.createdAt)}
-      </span>
+      {/* アバター */}
+      <div class="shrink-0 mt-0.5">
+        {entry.author?.avatarUrl
+          ? (
+            <img
+              src={entry.author.avatarUrl}
+              alt={entry.author.name}
+              class="w-8 h-8 rounded-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+          )
+          : null}
+        <span
+          class={`w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center${entry.author?.avatarUrl ? " hidden" : ""}`}
+        >
+          {(entry.author?.name ?? "?").charAt(0).toUpperCase()}
+        </span>
+      </div>
 
+      {/* 時刻 + コンテンツ */}
       <div class="flex-1 min-w-0">
         {editing.value
           ? (
@@ -114,9 +133,14 @@ function EntryItem({ entry, onDelete, onUpdate, projectName, currentUserId }: En
           )
           : (
             <div>
-              <p class="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
-                {entry.content}
-              </p>
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs text-gray-400 shrink-0">
+                  {formatTime(entry.createdAt)}
+                </span>
+                <p class="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
+                  {entry.content}
+                </p>
+              </div>
               <div class="flex items-center gap-2 mt-0.5">
                 {projectName && (
                   <span class="text-xs text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
