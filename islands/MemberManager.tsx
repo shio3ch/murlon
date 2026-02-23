@@ -98,9 +98,7 @@ export default function MemberManager(
         return;
       }
 
-      members.value = members.value.map((m) =>
-        m.id === memberId ? { ...m, role: newRole } : m
-      );
+      members.value = members.value.map((m) => m.id === memberId ? { ...m, role: newRole } : m);
     } catch {
       error.value = "ネットワークエラーが発生しました";
     }
@@ -134,8 +132,7 @@ export default function MemberManager(
     }
   }
 
-  const isCurrentUserOwnerOrAdmin =
-    ownerUser.id === currentUserId ||
+  const isCurrentUserOwnerOrAdmin = ownerUser.id === currentUserId ||
     members.value.some(
       (m) => m.userId === currentUserId && m.role === "ADMIN",
     );
@@ -206,8 +203,7 @@ export default function MemberManager(
                     </select>
                     <button
                       type="button"
-                      onClick={() =>
-                        handleRemove(member.id, member.user.name)}
+                      onClick={() => handleRemove(member.id, member.user.name)}
                       class="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1"
                     >
                       削除
@@ -240,16 +236,15 @@ export default function MemberManager(
               placeholder="メールアドレスを入力"
               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm"
               value={inviteEmail.value}
-              onInput={(e) =>
-                (inviteEmail.value = (e.target as HTMLInputElement).value)}
+              onInput={(e) => (inviteEmail.value = (e.target as HTMLInputElement).value)}
               disabled={submitting.value}
             />
             <select
               class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
               value={inviteRole.value}
-              onChange={(e) =>
-                (inviteRole.value =
-                  (e.target as HTMLSelectElement).value as ProjectRole)}
+              onChange={(
+                e,
+              ) => (inviteRole.value = (e.target as HTMLSelectElement).value as ProjectRole)}
               disabled={submitting.value}
             >
               {ROLES.map((role) => (

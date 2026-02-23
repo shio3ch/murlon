@@ -1,11 +1,7 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
-import type {
-  ApiResponse,
-  ReportTemplateRecord,
-  ReportType,
-} from "../../../lib/types.ts";
+import type { ApiResponse, ReportTemplateRecord, ReportType } from "../../../lib/types.ts";
 
 const PRESET_TEMPLATES: ReportTemplateRecord[] = [
   {
@@ -13,8 +9,7 @@ const PRESET_TEMPLATES: ReportTemplateRecord[] = [
     userId: null,
     name: "シンプル日報",
     type: "DAILY",
-    prompt:
-      "以下の分報を元に、シンプルな日報を作成してください。\n\n" +
+    prompt: "以下の分報を元に、シンプルな日報を作成してください。\n\n" +
       "【フォーマット】\n## やったこと\n- ...\n\n## 明日の予定\n- ...",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -24,8 +19,7 @@ const PRESET_TEMPLATES: ReportTemplateRecord[] = [
     userId: null,
     name: "Scrum形式",
     type: "DAILY",
-    prompt:
-      "以下の分報を元に、Scrum形式の日報を作成してください。\n\n" +
+    prompt: "以下の分報を元に、Scrum形式の日報を作成してください。\n\n" +
       "【フォーマット】\n## 昨日やったこと\n- ...\n\n## 今日やること\n- ...\n\n## ブロッカー\n- ...",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -35,8 +29,7 @@ const PRESET_TEMPLATES: ReportTemplateRecord[] = [
     userId: null,
     name: "KPT形式",
     type: "DAILY",
-    prompt:
-      "以下の分報を元に、KPT形式の日報を作成してください。\n\n" +
+    prompt: "以下の分報を元に、KPT形式の日報を作成してください。\n\n" +
       "【フォーマット】\n## Keep（続けること）\n- ...\n\n## Problem（課題）\n- ...\n\n## Try（試すこと）\n- ...",
     createdAt: new Date(),
     updatedAt: new Date(),

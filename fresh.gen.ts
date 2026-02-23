@@ -3,13 +3,23 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $_app from "./routes/_app.tsx";
+import * as $api_comments_id_ from "./routes/api/comments/[id].ts";
 import * as $api_entries_id_ from "./routes/api/entries/[id].ts";
+import * as $api_entries_id_comments from "./routes/api/entries/[id]/comments.ts";
+import * as $api_entries_id_reactions from "./routes/api/entries/[id]/reactions.ts";
 import * as $api_entries_index from "./routes/api/entries/index.ts";
+import * as $api_insights_index from "./routes/api/insights/index.ts";
+import * as $api_integrations_id_ from "./routes/api/integrations/[id].ts";
+import * as $api_integrations_index from "./routes/api/integrations/index.ts";
+import * as $api_integrations_post_report from "./routes/api/integrations/post-report.ts";
+import * as $api_integrations_test from "./routes/api/integrations/test.ts";
 import * as $api_projects_id_ from "./routes/api/projects/[id].ts";
 import * as $api_projects_id_members_memberId_ from "./routes/api/projects/[id]/members/[memberId].ts";
 import * as $api_projects_id_members_index from "./routes/api/projects/[id]/members/index.ts";
 import * as $api_projects_index from "./routes/api/projects/index.ts";
 import * as $api_reports_generate from "./routes/api/reports/generate.ts";
+import * as $api_standup_id_ from "./routes/api/standup/[id].ts";
+import * as $api_standup_index from "./routes/api/standup/index.ts";
 import * as $api_tasks_id_ from "./routes/api/tasks/[id].ts";
 import * as $api_tasks_index from "./routes/api/tasks/index.ts";
 import * as $api_templates_id_ from "./routes/api/templates/[id].ts";
@@ -19,6 +29,7 @@ import * as $auth_logout from "./routes/auth/logout.ts";
 import * as $auth_register from "./routes/auth/register.tsx";
 import * as $dashboard from "./routes/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
+import * as $insights_index from "./routes/insights/index.tsx";
 import * as $projects_id_index from "./routes/projects/[id]/index.tsx";
 import * as $projects_id_reports from "./routes/projects/[id]/reports.tsx";
 import * as $projects_id_settings from "./routes/projects/[id]/settings.tsx";
@@ -28,29 +39,46 @@ import * as $projects_new from "./routes/projects/new.tsx";
 import * as $reports_daily from "./routes/reports/daily.tsx";
 import * as $reports_monthly from "./routes/reports/monthly.tsx";
 import * as $reports_weekly from "./routes/reports/weekly.tsx";
+import * as $settings_index from "./routes/settings/index.tsx";
+import * as $settings_integrations from "./routes/settings/integrations.tsx";
 import * as $settings_templates from "./routes/settings/templates.tsx";
+import * as $standup_index from "./routes/standup/index.tsx";
 import * as $DashboardIsland from "./islands/DashboardIsland.tsx";
 import * as $EntryForm from "./islands/EntryForm.tsx";
 import * as $EntryList from "./islands/EntryList.tsx";
+import * as $EntryReactions from "./islands/EntryReactions.tsx";
+import * as $InsightsIsland from "./islands/InsightsIsland.tsx";
+import * as $IntegrationSettingsIsland from "./islands/IntegrationSettingsIsland.tsx";
 import * as $KanbanBoard from "./islands/KanbanBoard.tsx";
 import * as $MemberManager from "./islands/MemberManager.tsx";
 import * as $ProjectDeleteButton from "./islands/ProjectDeleteButton.tsx";
 import * as $ProjectForm from "./islands/ProjectForm.tsx";
 import * as $ProjectList from "./islands/ProjectList.tsx";
 import * as $ReportView from "./islands/ReportView.tsx";
+import * as $StandupIsland from "./islands/StandupIsland.tsx";
 import * as $TemplateManager from "./islands/TemplateManager.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
     "./routes/_app.tsx": $_app,
+    "./routes/api/comments/[id].ts": $api_comments_id_,
     "./routes/api/entries/[id].ts": $api_entries_id_,
+    "./routes/api/entries/[id]/comments.ts": $api_entries_id_comments,
+    "./routes/api/entries/[id]/reactions.ts": $api_entries_id_reactions,
     "./routes/api/entries/index.ts": $api_entries_index,
+    "./routes/api/insights/index.ts": $api_insights_index,
+    "./routes/api/integrations/[id].ts": $api_integrations_id_,
+    "./routes/api/integrations/index.ts": $api_integrations_index,
+    "./routes/api/integrations/post-report.ts": $api_integrations_post_report,
+    "./routes/api/integrations/test.ts": $api_integrations_test,
     "./routes/api/projects/[id].ts": $api_projects_id_,
     "./routes/api/projects/[id]/members/[memberId].ts": $api_projects_id_members_memberId_,
     "./routes/api/projects/[id]/members/index.ts": $api_projects_id_members_index,
     "./routes/api/projects/index.ts": $api_projects_index,
     "./routes/api/reports/generate.ts": $api_reports_generate,
+    "./routes/api/standup/[id].ts": $api_standup_id_,
+    "./routes/api/standup/index.ts": $api_standup_index,
     "./routes/api/tasks/[id].ts": $api_tasks_id_,
     "./routes/api/tasks/index.ts": $api_tasks_index,
     "./routes/api/templates/[id].ts": $api_templates_id_,
@@ -60,6 +88,7 @@ const manifest = {
     "./routes/auth/register.tsx": $auth_register,
     "./routes/dashboard.tsx": $dashboard,
     "./routes/index.tsx": $index,
+    "./routes/insights/index.tsx": $insights_index,
     "./routes/projects/[id]/index.tsx": $projects_id_index,
     "./routes/projects/[id]/reports.tsx": $projects_id_reports,
     "./routes/projects/[id]/settings.tsx": $projects_id_settings,
@@ -69,18 +98,25 @@ const manifest = {
     "./routes/reports/daily.tsx": $reports_daily,
     "./routes/reports/monthly.tsx": $reports_monthly,
     "./routes/reports/weekly.tsx": $reports_weekly,
+    "./routes/settings/index.tsx": $settings_index,
+    "./routes/settings/integrations.tsx": $settings_integrations,
     "./routes/settings/templates.tsx": $settings_templates,
+    "./routes/standup/index.tsx": $standup_index,
   },
   islands: {
     "./islands/DashboardIsland.tsx": $DashboardIsland,
     "./islands/EntryForm.tsx": $EntryForm,
     "./islands/EntryList.tsx": $EntryList,
+    "./islands/EntryReactions.tsx": $EntryReactions,
+    "./islands/InsightsIsland.tsx": $InsightsIsland,
+    "./islands/IntegrationSettingsIsland.tsx": $IntegrationSettingsIsland,
     "./islands/KanbanBoard.tsx": $KanbanBoard,
     "./islands/MemberManager.tsx": $MemberManager,
     "./islands/ProjectDeleteButton.tsx": $ProjectDeleteButton,
     "./islands/ProjectForm.tsx": $ProjectForm,
     "./islands/ProjectList.tsx": $ProjectList,
     "./islands/ReportView.tsx": $ReportView,
+    "./islands/StandupIsland.tsx": $StandupIsland,
     "./islands/TemplateManager.tsx": $TemplateManager,
   },
   baseUrl: import.meta.url,

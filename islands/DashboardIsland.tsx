@@ -1,5 +1,6 @@
 import { useSignal } from "@preact/signals";
 import type { EntryRecord } from "../lib/types.ts";
+import EntryReactions from "./EntryReactions.tsx";
 
 interface DashboardIslandProps {
   initialEntries: EntryRecord[];
@@ -32,9 +33,10 @@ interface EntryItemProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, content: string) => void;
   projectName?: string;
+  currentUserId: string;
 }
 
-function EntryItem({ entry, onDelete, onUpdate, projectName }: EntryItemProps) {
+function EntryItem({ entry, onDelete, onUpdate, projectName, currentUserId }: EntryItemProps) {
   const deleting = useSignal(false);
   const editing = useSignal(false);
   const editContent = useSignal(entry.content);
@@ -127,6 +129,7 @@ function EntryItem({ entry, onDelete, onUpdate, projectName }: EntryItemProps) {
                   </span>
                 )}
               </div>
+              <EntryReactions entryId={entry.id} currentUserId={currentUserId} />
             </div>
           )}
       </div>
@@ -158,7 +161,7 @@ function EntryItem({ entry, onDelete, onUpdate, projectName }: EntryItemProps) {
 }
 
 export default function DashboardIsland(
-  { initialEntries, projects, projectId }: DashboardIslandProps,
+  { initialEntries, userId, projects, projectId }: DashboardIslandProps,
 ) {
   const entries = useSignal<EntryRecord[]>(initialEntries);
   const content = useSignal("");
@@ -351,6 +354,7 @@ export default function DashboardIsland(
                         onDelete={handleDelete}
                         onUpdate={handleUpdate}
                         projectName={entry.projectId ? projectMap.get(entry.projectId) : undefined}
+                        currentUserId={userId}
                       />
                     ))}
                   </div>

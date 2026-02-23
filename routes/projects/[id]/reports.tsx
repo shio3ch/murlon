@@ -184,7 +184,17 @@ function reportTypeLabel(type: ReportType): string {
 }
 
 export default function ProjectReportsPage({ data }: PageProps<ProjectReportsPageData>) {
-  const { user, project, reports, currentReport, entries, reportType, startDate, endDate, templates } = data;
+  const {
+    user,
+    project,
+    reports,
+    currentReport,
+    entries,
+    reportType,
+    startDate,
+    endDate,
+    templates,
+  } = data;
 
   return (
     <div class="min-h-screen bg-gray-50">

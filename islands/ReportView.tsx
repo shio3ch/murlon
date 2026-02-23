@@ -1,11 +1,6 @@
 import { useSignal } from "@preact/signals";
 import type { JSX } from "preact";
-import type {
-  EntryRecord,
-  ReportRecord,
-  ReportTemplateRecord,
-  ReportType,
-} from "../lib/types.ts";
+import type { EntryRecord, ReportRecord, ReportTemplateRecord, ReportType } from "../lib/types.ts";
 
 interface ReportViewProps {
   report: ReportRecord | null;
@@ -66,6 +61,13 @@ function MarkdownRenderer({ content }: { content: string }) {
   return <div class="prose prose-sm max-w-none">{elements}</div>;
 }
 
+interface IntegrationOption {
+  id: string;
+  type: "SLACK" | "DISCORD";
+  channelName: string | null;
+  enabled: boolean;
+}
+
 export default function ReportView(
   { report: initialReport, entries, reportType, startDate, endDate, projectId, templates }:
     ReportViewProps,
@@ -74,6 +76,10 @@ export default function ReportView(
   const generating = useSignal(false);
   const error = useSignal<string | null>(null);
   const selectedTemplateId = useSignal<string>("");
+  const sharing = useSignal(false);
+  const shareSuccess = useSignal<string | null>(null);
+  const showShareMenu = useSignal(false);
+  const integrations = useSignal<IntegrationOption[]>([]);
 
   const reportTypeLabel = reportType === "DAILY"
     ? "日報"
@@ -126,6 +132,73 @@ export default function ReportView(
     }
   }
 
+  async function handleShare() {
+    if (!report.value) return;
+    sharing.value = true;
+    error.value = null;
+    shareSuccess.value = null;
+
+    try {
+      const res = await fetch("/api/integrations");
+      const json = await res.json();
+      if (!json.success) {
+        error.value = json.error || "連携設定の取得に失敗しました";
+        sharing.value = false;
+        return;
+      }
+
+      const enabled = (json.data as IntegrationOption[]).filter((s) => s.enabled);
+      if (enabled.length === 0) {
+        error.value = "有効な連携設定がありません。設定画面から追加してください。";
+        sharing.value = false;
+        return;
+      }
+
+      if (enabled.length === 1) {
+        await sendToIntegration(enabled[0].id, enabled[0].type);
+      } else {
+        integrations.value = enabled;
+        showShareMenu.value = true;
+        sharing.value = false;
+      }
+    } catch {
+      error.value = "ネットワークエラーが発生しました";
+      sharing.value = false;
+    }
+  }
+
+  async function sendToIntegration(integrationId: string, type: string) {
+    if (!report.value) return;
+    sharing.value = true;
+    error.value = null;
+    shareSuccess.value = null;
+
+    try {
+      const res = await fetch("/api/integrations/post-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: report.value.id,
+          integrationId,
+        }),
+      });
+
+      const json = await res.json();
+      if (!json.success) {
+        error.value = json.error || "送信に失敗しました";
+        return;
+      }
+
+      shareSuccess.value = `${type === "SLACK" ? "Slack" : "Discord"}へ送信しました`;
+      showShareMenu.value = false;
+      setTimeout(() => (shareSuccess.value = null), 3000);
+    } catch {
+      error.value = "ネットワークエラーが発生しました";
+    } finally {
+      sharing.value = false;
+    }
+  }
+
   return (
     <div class="space-y-6">
       {/* Entries summary */}
@@ -168,14 +241,10 @@ export default function ReportView(
               <select
                 class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 value={selectedTemplateId.value}
-                onChange={(e) =>
-                  (selectedTemplateId.value =
-                    (e.target as HTMLSelectElement).value)}
+                onChange={(e) => (selectedTemplateId.value = (e.target as HTMLSelectElement).value)}
               >
                 <option value="">デフォルト（テンプレートなし）</option>
-                {templates.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
+                {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             )}
             <button
@@ -206,19 +275,59 @@ export default function ReportView(
           </div>
         )}
 
+        {shareSuccess.value && (
+          <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">
+            {shareSuccess.value}
+          </div>
+        )}
+
         {report.value
           ? (
             <div>
               <MarkdownRenderer content={report.value.content} />
-              <p class="text-xs text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                生成日時: {new Date(report.value.createdAt).toLocaleString("ja-JP", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
+              <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <p class="text-xs text-gray-400">
+                  生成日時: {new Date(report.value.createdAt).toLocaleString("ja-JP", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+                <div class="relative">
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    disabled={sharing.value}
+                    class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {sharing.value ? "送信中..." : "共有"}
+                  </button>
+                  {showShareMenu.value && integrations.value.length > 0 && (
+                    <div class="absolute right-0 bottom-8 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[180px] z-10">
+                      {integrations.value.map((integration) => (
+                        <button
+                          key={integration.id}
+                          type="button"
+                          onClick={() => sendToIntegration(integration.id, integration.type)}
+                          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          {integration.type === "SLACK" ? "Slack" : "Discord"}
+                          {integration.channelName ? ` (#${integration.channelName})` : ""}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => (showShareMenu.value = false)}
+                        class="w-full text-left px-4 py-2 text-xs text-gray-400 hover:bg-gray-50 border-t border-gray-100"
+                      >
+                        キャンセル
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )
           : (
