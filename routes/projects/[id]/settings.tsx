@@ -4,7 +4,15 @@ import { prisma } from "../../../lib/db.ts";
 import Header from "../../../components/Header.tsx";
 import ProjectForm from "../../../islands/ProjectForm.tsx";
 import ProjectDeleteButton from "../../../islands/ProjectDeleteButton.tsx";
-import type { Visibility } from "../../../lib/types.ts";
+import MemberManager from "../../../islands/MemberManager.tsx";
+import type { ProjectRole, Visibility } from "../../../lib/types.ts";
+
+interface MemberWithUser {
+  id: string;
+  userId: string;
+  role: ProjectRole;
+  user: { id: string; name: string; email: string };
+}
 
 interface SettingsPageData {
   user: { id: string; name: string; email: string };
@@ -16,6 +24,8 @@ interface SettingsPageData {
     ownerId: string;
   };
   isOwner: boolean;
+  members: MemberWithUser[];
+  ownerUser: { id: string; name: string; email: string };
 }
 
 export const handler: Handlers<SettingsPageData> = {
@@ -29,7 +39,10 @@ export const handler: Handlers<SettingsPageData> = {
 
     const project = await prisma.project.findUnique({
       where: { id },
-      include: { members: true },
+      include: {
+        members: { include: { user: true } },
+        owner: true,
+      },
     });
 
     if (!project) {
@@ -48,6 +61,23 @@ export const handler: Handlers<SettingsPageData> = {
       });
     }
 
+    const members: MemberWithUser[] = project.members.map((m) => ({
+      id: m.id,
+      userId: m.userId,
+      role: m.role as ProjectRole,
+      user: {
+        id: m.user.id,
+        name: m.user.name,
+        email: m.user.email,
+      },
+    }));
+
+    const ownerUser = {
+      id: project.owner.id,
+      name: project.owner.name,
+      email: project.owner.email,
+    };
+
     return ctx.render({
       user: { id: session.userId, name: session.name, email: session.email },
       project: {
@@ -58,12 +88,14 @@ export const handler: Handlers<SettingsPageData> = {
         ownerId: project.ownerId,
       },
       isOwner,
+      members,
+      ownerUser,
     });
   },
 };
 
 export default function ProjectSettingsPage({ data }: PageProps<SettingsPageData>) {
-  const { user, project, isOwner } = data;
+  const { user, project, isOwner, members, ownerUser } = data;
 
   return (
     <div class="min-h-screen bg-gray-50">
@@ -91,6 +123,17 @@ export default function ProjectSettingsPage({ data }: PageProps<SettingsPageData
               description: project.description,
               visibility: project.visibility,
             }}
+          />
+        </div>
+
+        {/* Member management */}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">メンバー管理</h2>
+          <MemberManager
+            projectId={project.id}
+            initialMembers={members}
+            ownerUser={ownerUser}
+            currentUserId={user.id}
           />
         </div>
 

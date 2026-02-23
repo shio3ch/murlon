@@ -4,15 +4,10 @@
 /// <reference lib="dom.asynciterable" />
 /// <reference lib="deno.ns" />
 
-import "$std/dotenv/load.ts";
+import { load } from "$std/dotenv/mod.ts";
+await load({ export: true, allowEmptyValues: true });
 
-import { Builder } from "$fresh/dev.ts";
+import dev from "$fresh/dev.ts";
 import config from "./fresh.config.ts";
 
-const builder = new Builder({});
-
-if (Deno.args.includes("build")) {
-  await builder.build(config);
-} else {
-  await builder.listen("./main.ts", config, {});
-}
+await dev(import.meta.url, "./main.ts", config);

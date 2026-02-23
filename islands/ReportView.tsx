@@ -1,6 +1,11 @@
 import { useSignal } from "@preact/signals";
 import type { JSX } from "preact";
-import type { EntryRecord, ReportRecord, ReportType } from "../lib/types.ts";
+import type {
+  EntryRecord,
+  ReportRecord,
+  ReportTemplateRecord,
+  ReportType,
+} from "../lib/types.ts";
 
 interface ReportViewProps {
   report: ReportRecord | null;
@@ -10,6 +15,7 @@ interface ReportViewProps {
   endDate: string;
   userId: string;
   projectId?: string;
+  templates?: ReportTemplateRecord[];
 }
 
 function MarkdownRenderer({ content }: { content: string }) {
@@ -61,11 +67,13 @@ function MarkdownRenderer({ content }: { content: string }) {
 }
 
 export default function ReportView(
-  { report: initialReport, entries, reportType, startDate, endDate, projectId }: ReportViewProps,
+  { report: initialReport, entries, reportType, startDate, endDate, projectId, templates }:
+    ReportViewProps,
 ) {
   const report = useSignal<ReportRecord | null>(initialReport);
   const generating = useSignal(false);
   const error = useSignal<string | null>(null);
+  const selectedTemplateId = useSignal<string>("");
 
   const reportTypeLabel = reportType === "DAILY"
     ? "日報"
@@ -84,6 +92,13 @@ export default function ReportView(
         endDate,
       };
       if (projectId) payload.projectId = projectId;
+
+      if (selectedTemplateId.value && templates) {
+        const selected = templates.find((t) => t.id === selectedTemplateId.value);
+        if (selected) {
+          payload.promptTemplate = selected.prompt;
+        }
+      }
 
       const res = await fetch("/api/reports/generate", {
         method: "POST",
@@ -148,25 +163,41 @@ export default function ReportView(
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-base font-bold text-gray-800">{reportTypeLabel}</h2>
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={generating.value || entries.length === 0}
-            class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
-          >
-            {generating.value
-              ? (
-                <>
-                  <span class="animate-spin text-base">⟳</span>
-                  生成中...
-                </>
-              )
-              : (
-                <>
-                  ✨ {report.value ? "再生成" : `AIで${reportTypeLabel}を生成`}
-                </>
-              )}
-          </button>
+          <div class="flex items-center gap-2">
+            {templates && templates.length > 0 && (
+              <select
+                class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                value={selectedTemplateId.value}
+                onChange={(e) =>
+                  (selectedTemplateId.value =
+                    (e.target as HTMLSelectElement).value)}
+              >
+                <option value="">デフォルト（テンプレートなし）</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            )}
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={generating.value || entries.length === 0}
+              class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            >
+              {generating.value
+                ? (
+                  <>
+                    <span class="animate-spin text-base">⟳</span>
+                    生成中...
+                  </>
+                )
+                : (
+                  <>
+                    ✨ {report.value ? "再生成" : `AIで${reportTypeLabel}を生成`}
+                  </>
+                )}
+            </button>
+          </div>
         </div>
 
         {error.value && (

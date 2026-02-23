@@ -53,6 +53,32 @@ export interface UserRecord {
   updatedAt: Date;
 }
 
+export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE" | "HOLD";
+export type TaskPriority = "HIGH" | "MEDIUM" | "LOW";
+
+export interface TaskRecord {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: Date | null;
+  assigneeId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReportTemplateRecord {
+  id: string;
+  userId: string | null;
+  name: string;
+  type: ReportType;
+  prompt: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;

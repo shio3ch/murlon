@@ -16,7 +16,7 @@ interface WeeklyReportData {
 function getWeekRange(dateStr: string): { startDate: Date; endDate: Date } {
   const date = new Date(dateStr);
   const day = date.getDay();
-  const diffToMonday = (day === 0 ? -6 : 1 - day);
+  const diffToMonday = day === 0 ? -6 : 1 - day;
   const monday = new Date(date);
   monday.setDate(date.getDate() + diffToMonday);
   monday.setHours(0, 0, 0, 0);
