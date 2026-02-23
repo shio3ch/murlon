@@ -11,4 +11,3 @@
 | [05-tech-stack.md](./05-tech-stack.md)                 | 技術スタック                                                         |
 | [06-architecture.md](./06-architecture.md)             | アーキテクチャ方針（DDD）                                            |
 | [07-non-functional.md](./07-non-functional.md)         | 非機能要件                                                           |
-| [08-development-phases.md](./08-development-phases.md) | 開発フェーズ                                                         |
