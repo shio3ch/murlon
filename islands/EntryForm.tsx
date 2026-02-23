@@ -4,12 +4,18 @@ import type { EntryRecord } from "../lib/types.ts";
 interface EntryFormProps {
   userId: string;
   onEntryAdded: (entry: EntryRecord) => void;
+  projectId?: string;
+  projects?: { id: string; name: string }[];
 }
 
-export default function EntryForm({ userId, onEntryAdded }: EntryFormProps) {
+export default function EntryForm(
+  { onEntryAdded, projectId, projects }: EntryFormProps,
+) {
   const content = useSignal("");
   const submitting = useSignal(false);
   const error = useSignal<string | null>(null);
+  const selectedProjectId = useSignal<string>(projectId || "");
+  const tension = useSignal<number | null>(null);
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
@@ -20,10 +26,15 @@ export default function EntryForm({ userId, onEntryAdded }: EntryFormProps) {
     error.value = null;
 
     try {
+      const payload: Record<string, unknown> = { content: text };
+      const pid = projectId || selectedProjectId.value;
+      if (pid) payload.projectId = pid;
+      if (tension.value !== null) payload.tension = tension.value;
+
       const res = await fetch("/api/entries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text }),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -33,6 +44,8 @@ export default function EntryForm({ userId, onEntryAdded }: EntryFormProps) {
       }
 
       content.value = "";
+      tension.value = null;
+      if (!projectId) selectedProjectId.value = "";
       onEntryAdded({
         ...json.data,
         createdAt: new Date(json.data.createdAt),
@@ -65,11 +78,46 @@ export default function EntryForm({ userId, onEntryAdded }: EntryFormProps) {
           disabled={submitting.value}
         />
 
-        {error.value && (
-          <p class="text-red-500 text-sm mt-1 px-3">{error.value}</p>
-        )}
+        {error.value && <p class="text-red-500 text-sm mt-1 px-3">{error.value}</p>}
 
-        <div class="flex items-center justify-between px-1 pt-2 border-t border-gray-100 mt-2">
+        <div class="flex items-center gap-3 px-1 pt-2 border-t border-gray-100 mt-2">
+          {/* Project selector (only when not fixed via prop) */}
+          {!projectId && projects && projects.length > 0 && (
+            <select
+              class="text-sm border border-gray-200 rounded-lg px-2 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              value={selectedProjectId.value}
+              onChange={(e) => (selectedProjectId.value = (e.target as HTMLSelectElement).value)}
+              disabled={submitting.value}
+            >
+              <option value="">プロジェクトなし</option>
+              {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          )}
+
+          {/* Tension selector */}
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400 mr-0.5">調子</span>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => {
+                  tension.value = tension.value === n ? null : n;
+                }}
+                class={`w-6 h-6 rounded-full text-xs font-semibold transition-colors ${
+                  tension.value === n
+                    ? "bg-brand-600 text-white"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
+                disabled={submitting.value}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+
+          <div class="flex-1" />
+
           <span class="text-xs text-gray-400">
             {content.value.length}/5000
           </span>
@@ -85,4 +133,3 @@ export default function EntryForm({ userId, onEntryAdded }: EntryFormProps) {
     </div>
   );
 }
-

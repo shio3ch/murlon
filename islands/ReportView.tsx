@@ -9,6 +9,7 @@ interface ReportViewProps {
   startDate: string;
   endDate: string;
   userId: string;
+  projectId?: string;
 }
 
 function MarkdownRenderer({ content }: { content: string }) {
@@ -60,28 +61,34 @@ function MarkdownRenderer({ content }: { content: string }) {
 }
 
 export default function ReportView(
-  { report: initialReport, entries, reportType, startDate, endDate, userId }: ReportViewProps,
+  { report: initialReport, entries, reportType, startDate, endDate, projectId }: ReportViewProps,
 ) {
   const report = useSignal<ReportRecord | null>(initialReport);
   const generating = useSignal(false);
   const error = useSignal<string | null>(null);
 
-  const reportTypeLabel =
-    reportType === "DAILY" ? "日報" : reportType === "WEEKLY" ? "週報" : "月報";
+  const reportTypeLabel = reportType === "DAILY"
+    ? "日報"
+    : reportType === "WEEKLY"
+    ? "週報"
+    : "月報";
 
   async function handleGenerate() {
     generating.value = true;
     error.value = null;
 
     try {
+      const payload: Record<string, unknown> = {
+        type: reportType,
+        startDate,
+        endDate,
+      };
+      if (projectId) payload.projectId = projectId;
+
       const res = await fetch("/api/reports/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: reportType,
-          startDate,
-          endDate,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -142,6 +149,7 @@ export default function ReportView(
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-base font-bold text-gray-800">{reportTypeLabel}</h2>
           <button
+            type="button"
             onClick={handleGenerate}
             disabled={generating.value || entries.length === 0}
             class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -172,8 +180,7 @@ export default function ReportView(
             <div>
               <MarkdownRenderer content={report.value.content} />
               <p class="text-xs text-gray-400 mt-4 pt-3 border-t border-gray-100">
-                生成日時:{" "}
-                {new Date(report.value.createdAt).toLocaleString("ja-JP", {
+                生成日時: {new Date(report.value.createdAt).toLocaleString("ja-JP", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

@@ -16,8 +16,7 @@ export function getAIProvider(): AIProvider {
     return cachedProvider;
   }
 
-  const providerType =
-    (Deno.env.get("AI_PROVIDER") as AIProviderType) ?? "openai-compatible";
+  const providerType = (Deno.env.get("AI_PROVIDER") as AIProviderType) ?? "openai-compatible";
 
   switch (providerType) {
     case "anthropic":
@@ -29,7 +28,7 @@ export function getAIProvider(): AIProvider {
     default:
       throw new Error(
         `未対応のAIプロバイダー: ${providerType}。` +
-        `"anthropic" または "openai-compatible" を指定してください。`
+          `"anthropic" または "openai-compatible" を指定してください。`,
       );
   }
 

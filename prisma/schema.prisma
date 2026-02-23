@@ -16,43 +16,88 @@ model User {
   email        String   @unique
   passwordHash String
   name         String
+  avatarUrl    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  entries Entry[]
-  reports Report[]
+  entries          Entry[]
+  reports          Report[]
+  ownedProjects    Project[]       @relation("ProjectOwner")
+  projectMembers   ProjectMember[]
 
   @@map("users")
 }
 
-model Entry {
-  id        String   @id @default(cuid())
-  content   String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  visibility  Visibility @default(PRIVATE)
+  ownerId     String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  owner   User            @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members ProjectMember[]
+  entries Entry[]
+  reports Report[]
+
+  @@index([ownerId])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String      @id @default(cuid())
+  projectId String
+  userId    String
+  role      ProjectRole @default(VIEWER)
+  createdAt DateTime    @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@map("project_members")
+}
+
+model Entry {
+  id           String   @id @default(cuid())
+  content      String
+  userId       String
+  projectId    String?
+  tension      Int?
+  templateType String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reports ReportEntry[]
 
   @@index([userId, createdAt])
+  @@index([projectId, createdAt])
   @@map("entries")
 }
 
 model Report {
-  id         String     @id @default(cuid())
-  type       ReportType
-  content    String
-  startDate  DateTime
-  endDate    DateTime
-  userId     String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id             String     @id @default(cuid())
+  type           ReportType
+  content        String
+  startDate      DateTime
+  endDate        DateTime
+  userId         String
+  projectId      String?
+  promptTemplate String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
   entries ReportEntry[]
 
   @@index([userId, type, startDate])
+  @@index([projectId, type, startDate])
   @@map("reports")
 }
 
@@ -71,4 +116,17 @@ enum ReportType {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum Visibility {
+  PRIVATE
+  LIMITED
+  PUBLIC
+}
+
+enum ProjectRole {
+  VIEWER
+  COMMENTER
+  CONTRIBUTOR
+  ADMIN
 }

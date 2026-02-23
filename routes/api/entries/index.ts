@@ -16,15 +16,20 @@ export const handler: Handlers = {
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
     const cursor = url.searchParams.get("cursor") || undefined;
     const date = url.searchParams.get("date");
+    const projectId = url.searchParams.get("projectId") || undefined;
 
-    let whereClause: { userId: string; createdAt?: { gte: Date; lte: Date } } = {
+    const whereClause: Record<string, unknown> = {
       userId: session.userId,
     };
 
     if (date) {
       const startDate = new Date(date + "T00:00:00");
       const endDate = new Date(date + "T23:59:59");
-      whereClause = { ...whereClause, createdAt: { gte: startDate, lte: endDate } };
+      whereClause.createdAt = { gte: startDate, lte: endDate };
+    }
+
+    if (projectId) {
+      whereClause.projectId = projectId;
     }
 
     const entries = await prisma.entry.findMany({
@@ -34,14 +39,16 @@ export const handler: Handlers = {
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
 
-    return Response.json({
-      success: true,
-      data: entries.map((e) => ({
-        ...e,
-        createdAt: e.createdAt.toISOString(),
-        updatedAt: e.updatedAt.toISOString(),
-      })),
-    } satisfies ApiResponse);
+    return Response.json(
+      {
+        success: true,
+        data: entries.map((e) => ({
+          ...e,
+          createdAt: e.createdAt.toISOString(),
+          updatedAt: e.updatedAt.toISOString(),
+        })),
+      } satisfies ApiResponse,
+    );
   },
 
   async POST(req) {
@@ -52,7 +59,12 @@ export const handler: Handlers = {
       });
     }
 
-    let body: { content?: string };
+    let body: {
+      content?: string;
+      projectId?: string;
+      tension?: number;
+      templateType?: string;
+    };
     try {
       body = await req.json();
     } catch {
@@ -77,8 +89,50 @@ export const handler: Handlers = {
       );
     }
 
+    if (body.tension !== undefined && body.tension !== null) {
+      if (!Number.isInteger(body.tension) || body.tension < 1 || body.tension > 5) {
+        return Response.json(
+          {
+            success: false,
+            error: "テンションは1〜5の整数で指定してください",
+          } satisfies ApiResponse,
+          { status: 400 },
+        );
+      }
+    }
+
+    if (body.projectId) {
+      const project = await prisma.project.findUnique({
+        where: { id: body.projectId },
+        include: { members: { where: { userId: session.userId } } },
+      });
+
+      if (!project) {
+        return Response.json(
+          { success: false, error: "プロジェクトが見つかりません" } satisfies ApiResponse,
+          { status: 404 },
+        );
+      }
+
+      if (project.ownerId !== session.userId && project.members.length === 0) {
+        return Response.json(
+          {
+            success: false,
+            error: "このプロジェクトへのアクセス権がありません",
+          } satisfies ApiResponse,
+          { status: 403 },
+        );
+      }
+    }
+
     const entry = await prisma.entry.create({
-      data: { content, userId: session.userId },
+      data: {
+        content,
+        userId: session.userId,
+        projectId: body.projectId || null,
+        tension: body.tension ?? null,
+        templateType: body.templateType || null,
+      },
     });
 
     const responseData: EntryRecord = {

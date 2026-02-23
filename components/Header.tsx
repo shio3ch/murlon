@@ -5,7 +5,7 @@ interface HeaderProps {
 export default function Header({ user }: HeaderProps) {
   return (
     <header class="bg-white border-b border-gray-200 shadow-sm">
-      <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <a href="/" class="flex items-center gap-2">
           <span class="text-2xl font-bold text-brand-600">murlon</span>
           <span class="hidden sm:inline text-xs text-gray-400 border border-gray-200 rounded px-1.5 py-0.5">
@@ -15,10 +15,16 @@ export default function Header({ user }: HeaderProps) {
 
         <nav class="flex items-center gap-4">
           <a
-            href="/"
+            href="/dashboard"
             class="text-sm text-gray-600 hover:text-brand-600 font-medium"
           >
-            分報
+            ダッシュボード
+          </a>
+          <a
+            href="/projects"
+            class="text-sm text-gray-600 hover:text-brand-600 font-medium"
+          >
+            プロジェクト
           </a>
           <a
             href="/reports/daily"
