@@ -30,6 +30,21 @@ export default function SettingsPage({ data }: PageProps<SettingsPageData>) {
 
         <div class="space-y-4">
           <a
+            href="/settings/profile"
+            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-semibold text-gray-900">プロフィール設定</h2>
+                <p class="text-sm text-gray-500 mt-0.5">
+                  名前やアバター画像を変更します
+                </p>
+              </div>
+              <span class="text-gray-400">→</span>
+            </div>
+          </a>
+
+          <a
             href="/settings/templates"
             class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
           >
