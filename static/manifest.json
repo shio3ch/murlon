@@ -1,0 +1,25 @@
+{
+  "name": "murlon",
+  "short_name": "murlon",
+  "description": "書くだけで日報が完成する",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "分報を書く",
+      "url": "/dashboard",
+      "description": "ダッシュボードを開く"
+    }
+  ]
+}

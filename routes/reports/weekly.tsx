@@ -3,6 +3,7 @@ import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
 import Header from "../../components/Header.tsx";
 import ReportView from "../../islands/ReportView.tsx";
+import PdfExportButton from "../../islands/PdfExportButton.tsx";
 import type { EntryRecord, ReportRecord } from "../../lib/types.ts";
 
 interface WeeklyReportData {
@@ -110,6 +111,7 @@ export default function WeeklyReportPage({ data }: PageProps<WeeklyReportData>) 
             </p>
           </div>
           <div class="flex gap-2">
+            <PdfExportButton title={`週報_${weekStart}_${weekEnd}`} />
             <a
               href={`/reports/weekly?date=${prevWeek}`}
               class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"

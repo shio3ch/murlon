@@ -1,0 +1,54 @@
+@media print {
+  /* ナビゲーション・ヘッダー・ボタン類を非表示 */
+  nav, header, .no-print, button, .print-hidden {
+    display: none !important;
+  }
+
+  /* ページ設定 */
+  @page {
+    margin: 2cm;
+    size: A4 portrait;
+  }
+
+  /* フォント設定 */
+  body {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+  }
+
+  /* レポートコンテンツの最適化 */
+  .prose, .report-content {
+    max-width: 100% !important;
+  }
+
+  /* ページ区切り */
+  h1, h2 {
+    page-break-after: avoid;
+  }
+  pre, blockquote {
+    page-break-inside: avoid;
+  }
+
+  /* リンクのURL非表示 */
+  a::after {
+    content: "";
+  }
+
+  /* 背景色・影の除去 */
+  * {
+    box-shadow: none !important;
+  }
+
+  /* 印刷タイトルエリア */
+  .print-title {
+    display: block !important;
+    margin-bottom: 1cm;
+  }
+}
+
+/* 画面表示時は非表示 */
+.print-title {
+  display: none;
+}

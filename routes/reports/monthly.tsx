@@ -3,6 +3,7 @@ import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
 import Header from "../../components/Header.tsx";
 import ReportView from "../../islands/ReportView.tsx";
+import PdfExportButton from "../../islands/PdfExportButton.tsx";
 import type { EntryRecord, ReportRecord } from "../../lib/types.ts";
 
 interface MonthlyReportData {
@@ -91,6 +92,7 @@ export default function MonthlyReportPage({ data }: PageProps<MonthlyReportData>
             </p>
           </div>
           <div class="flex gap-2">
+            <PdfExportButton title={`月報_${year}年${month}月`} />
             <a
               href={`/reports/monthly?year=${prevMonth.year}&month=${prevMonth.month}`}
               class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
