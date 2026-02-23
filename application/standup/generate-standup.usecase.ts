@@ -44,13 +44,17 @@ export async function generateStandupUseCase(
     targetDate.getFullYear(),
     targetDate.getMonth(),
     targetDate.getDate(),
-    0, 0, 0,
+    0,
+    0,
+    0,
   );
   const endDate = new Date(
     targetDate.getFullYear(),
     targetDate.getMonth(),
     targetDate.getDate(),
-    23, 59, 59,
+    23,
+    59,
+    59,
   );
 
   const entries = await deps.entryRepository.findByUserId(input.userId, {

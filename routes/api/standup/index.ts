@@ -1,7 +1,11 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
 import { domainErrorResponse, unauthorized } from "../../../lib/http.ts";
-import { entryRepository, projectRepository, standupRepository } from "../../../lib/repositories.ts";
+import {
+  entryRepository,
+  projectRepository,
+  standupRepository,
+} from "../../../lib/repositories.ts";
 import { generateStandupUseCase } from "../../../application/standup/generate-standup.usecase.ts";
 import { getAIProvider } from "../../../infrastructure/ai/index.ts";
 import { DomainError } from "../../../domain/shared/domain-error.ts";

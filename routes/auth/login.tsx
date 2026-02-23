@@ -29,6 +29,10 @@ export const handler: Handlers<LoginData> = {
       return ctx.render({ error: "メールアドレスまたはパスワードが正しくありません" });
     }
 
+    if (!user.passwordHash) {
+      return ctx.render({ error: "メールアドレスまたはパスワードが正しくありません" });
+    }
+
     const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
       return ctx.render({ error: "メールアドレスまたはパスワードが正しくありません" });

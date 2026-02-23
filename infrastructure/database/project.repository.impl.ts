@@ -1,5 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
-import type { Project, ProjectMember, ProjectRole, Visibility } from "../../domain/project/project.entity.ts";
+import type {
+  Project,
+  ProjectMember,
+  ProjectRole,
+  Visibility,
+} from "../../domain/project/project.entity.ts";
 import type {
   IProjectMemberRepository,
   IProjectRepository,
@@ -30,7 +35,9 @@ function toProject(
     ownerId: string;
     createdAt: Date;
     updatedAt: Date;
-    members: Array<{ id: string; projectId: string; userId: string; role: string; createdAt: Date }>;
+    members: Array<
+      { id: string; projectId: string; userId: string; role: string; createdAt: Date }
+    >;
   },
 ): Project {
   return {

@@ -1,7 +1,11 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../../lib/auth.ts";
 import { domainErrorResponse, unauthorized } from "../../../../lib/http.ts";
-import { entryRepository, projectRepository, reactionRepository } from "../../../../lib/repositories.ts";
+import {
+  entryRepository,
+  projectRepository,
+  reactionRepository,
+} from "../../../../lib/repositories.ts";
 import {
   listReactionsUseCase,
   toggleReactionUseCase,

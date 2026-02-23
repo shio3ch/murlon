@@ -1,6 +1,9 @@
 import { DomainError } from "../../domain/shared/domain-error.ts";
 import { getProjectRole } from "../../domain/project/project.entity.ts";
-import type { IProjectRepository, IProjectMemberRepository } from "../../domain/project/project.repository.ts";
+import type {
+  IProjectMemberRepository,
+  IProjectRepository,
+} from "../../domain/project/project.repository.ts";
 
 export interface RemoveMemberDeps {
   projectRepository: IProjectRepository;

@@ -1,5 +1,8 @@
 import { DomainError } from "../../domain/shared/domain-error.ts";
-import type { IReactionRepository, ReactionSummary } from "../../domain/reaction/reaction.repository.ts";
+import type {
+  IReactionRepository,
+  ReactionSummary,
+} from "../../domain/reaction/reaction.repository.ts";
 import type { IEntryRepository } from "../../domain/entry/entry.repository.ts";
 import type { IProjectRepository } from "../../domain/project/project.repository.ts";
 

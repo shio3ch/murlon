@@ -1,5 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
-import type { IntegrationSetting, IntegrationType } from "../../domain/integration/integration.entity.ts";
+import type {
+  IntegrationSetting,
+  IntegrationType,
+} from "../../domain/integration/integration.entity.ts";
 import type { IIntegrationRepository } from "../../domain/integration/integration.repository.ts";
 
 function toIntegration(record: {

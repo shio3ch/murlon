@@ -72,7 +72,9 @@ export const handler: Handlers = {
         { templateRepository },
         { userId: session.userId, ...body },
       );
-      return Response.json({ success: true, data: template } satisfies ApiResponse, { status: 201 });
+      return Response.json({ success: true, data: template } satisfies ApiResponse, {
+        status: 201,
+      });
     } catch (e) {
       if (e instanceof DomainError) return domainErrorResponse(e);
       throw e;
