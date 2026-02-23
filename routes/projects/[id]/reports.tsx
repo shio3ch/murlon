@@ -3,6 +3,7 @@ import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
 import Header from "../../../components/Header.tsx";
 import ReportView from "../../../islands/ReportView.tsx";
+import PdfExportButton from "../../../islands/PdfExportButton.tsx";
 import type {
   EntryRecord,
   ReportRecord,
@@ -214,6 +215,9 @@ export default function ProjectReportsPage({ data }: PageProps<ProjectReportsPag
           <h1 class="text-2xl font-bold text-gray-900">
             {project.name} - レポート
           </h1>
+          <PdfExportButton
+            title={`${project.name}_${reportTypeLabel(reportType)}_${startDate}`}
+          />
         </div>
 
         {/* Report type tabs */}

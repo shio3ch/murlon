@@ -3,6 +3,7 @@ import { getSession } from "../lib/auth.ts";
 import { prisma } from "../lib/db.ts";
 import Header from "../components/Header.tsx";
 import DashboardIsland from "../islands/DashboardIsland.tsx";
+import CalendarEvents from "../islands/CalendarEvents.tsx";
 import type { EntryRecord, ReportRecord, ReportType } from "../lib/types.ts";
 
 interface DashboardData {
@@ -99,6 +100,8 @@ export default function Dashboard({ data }: PageProps<DashboardData>) {
           </h1>
           <p class="text-gray-500 mt-1">今日も一言から始めましょう</p>
         </div>
+
+        <CalendarEvents />
 
         <DashboardIsland
           initialEntries={entries}

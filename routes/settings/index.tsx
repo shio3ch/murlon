@@ -58,6 +58,36 @@ export default function SettingsPage({ data }: PageProps<SettingsPageData>) {
               <span class="text-gray-400">→</span>
             </div>
           </a>
+
+          <a
+            href="/settings/github"
+            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-semibold text-gray-900">GitHub連携</h2>
+                <p class="text-sm text-gray-500 mt-0.5">
+                  GitHubのコミット履歴を分報として自動インポートします
+                </p>
+              </div>
+              <span class="text-gray-400">→</span>
+            </div>
+          </a>
+
+          <a
+            href="/settings/google-calendar"
+            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-semibold text-gray-900">Google Calendar連携</h2>
+                <p class="text-sm text-gray-500 mt-0.5">
+                  Google Calendarのスケジュールを分報作成時に参照できます
+                </p>
+              </div>
+              <span class="text-gray-400">→</span>
+            </div>
+          </a>
         </div>
       </main>
     </div>

@@ -3,11 +3,20 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $_app from "./routes/_app.tsx";
+import * as $api_calendar_auth from "./routes/api/calendar/auth.ts";
+import * as $api_calendar_callback from "./routes/api/calendar/callback.ts";
+import * as $api_calendar_disconnect from "./routes/api/calendar/disconnect.ts";
+import * as $api_calendar_events from "./routes/api/calendar/events.ts";
 import * as $api_comments_id_ from "./routes/api/comments/[id].ts";
 import * as $api_entries_id_ from "./routes/api/entries/[id].ts";
 import * as $api_entries_id_comments from "./routes/api/entries/[id]/comments.ts";
 import * as $api_entries_id_reactions from "./routes/api/entries/[id]/reactions.ts";
 import * as $api_entries_index from "./routes/api/entries/index.ts";
+import * as $api_github_auth from "./routes/api/github/auth.ts";
+import * as $api_github_callback from "./routes/api/github/callback.ts";
+import * as $api_github_disconnect from "./routes/api/github/disconnect.ts";
+import * as $api_github_import from "./routes/api/github/import.ts";
+import * as $api_github_repos from "./routes/api/github/repos.ts";
 import * as $api_insights_index from "./routes/api/insights/index.ts";
 import * as $api_integrations_id_ from "./routes/api/integrations/[id].ts";
 import * as $api_integrations_index from "./routes/api/integrations/index.ts";
@@ -39,21 +48,28 @@ import * as $projects_new from "./routes/projects/new.tsx";
 import * as $reports_daily from "./routes/reports/daily.tsx";
 import * as $reports_monthly from "./routes/reports/monthly.tsx";
 import * as $reports_weekly from "./routes/reports/weekly.tsx";
+import * as $settings_github from "./routes/settings/github.tsx";
+import * as $settings_google_calendar from "./routes/settings/google-calendar.tsx";
 import * as $settings_index from "./routes/settings/index.tsx";
 import * as $settings_integrations from "./routes/settings/integrations.tsx";
 import * as $settings_templates from "./routes/settings/templates.tsx";
 import * as $standup_index from "./routes/standup/index.tsx";
+import * as $CalendarEvents from "./islands/CalendarEvents.tsx";
 import * as $DashboardIsland from "./islands/DashboardIsland.tsx";
 import * as $EntryForm from "./islands/EntryForm.tsx";
 import * as $EntryList from "./islands/EntryList.tsx";
 import * as $EntryReactions from "./islands/EntryReactions.tsx";
+import * as $GitHubSettingsIsland from "./islands/GitHubSettingsIsland.tsx";
+import * as $GoogleCalendarDisconnect from "./islands/GoogleCalendarDisconnect.tsx";
 import * as $InsightsIsland from "./islands/InsightsIsland.tsx";
 import * as $IntegrationSettingsIsland from "./islands/IntegrationSettingsIsland.tsx";
 import * as $KanbanBoard from "./islands/KanbanBoard.tsx";
 import * as $MemberManager from "./islands/MemberManager.tsx";
+import * as $PdfExportButton from "./islands/PdfExportButton.tsx";
 import * as $ProjectDeleteButton from "./islands/ProjectDeleteButton.tsx";
 import * as $ProjectForm from "./islands/ProjectForm.tsx";
 import * as $ProjectList from "./islands/ProjectList.tsx";
+import * as $PwaInstallPrompt from "./islands/PwaInstallPrompt.tsx";
 import * as $ReportView from "./islands/ReportView.tsx";
 import * as $StandupIsland from "./islands/StandupIsland.tsx";
 import * as $TemplateManager from "./islands/TemplateManager.tsx";
@@ -62,11 +78,20 @@ import type { Manifest } from "$fresh/server.ts";
 const manifest = {
   routes: {
     "./routes/_app.tsx": $_app,
+    "./routes/api/calendar/auth.ts": $api_calendar_auth,
+    "./routes/api/calendar/callback.ts": $api_calendar_callback,
+    "./routes/api/calendar/disconnect.ts": $api_calendar_disconnect,
+    "./routes/api/calendar/events.ts": $api_calendar_events,
     "./routes/api/comments/[id].ts": $api_comments_id_,
     "./routes/api/entries/[id].ts": $api_entries_id_,
     "./routes/api/entries/[id]/comments.ts": $api_entries_id_comments,
     "./routes/api/entries/[id]/reactions.ts": $api_entries_id_reactions,
     "./routes/api/entries/index.ts": $api_entries_index,
+    "./routes/api/github/auth.ts": $api_github_auth,
+    "./routes/api/github/callback.ts": $api_github_callback,
+    "./routes/api/github/disconnect.ts": $api_github_disconnect,
+    "./routes/api/github/import.ts": $api_github_import,
+    "./routes/api/github/repos.ts": $api_github_repos,
     "./routes/api/insights/index.ts": $api_insights_index,
     "./routes/api/integrations/[id].ts": $api_integrations_id_,
     "./routes/api/integrations/index.ts": $api_integrations_index,
@@ -98,23 +123,30 @@ const manifest = {
     "./routes/reports/daily.tsx": $reports_daily,
     "./routes/reports/monthly.tsx": $reports_monthly,
     "./routes/reports/weekly.tsx": $reports_weekly,
+    "./routes/settings/github.tsx": $settings_github,
+    "./routes/settings/google-calendar.tsx": $settings_google_calendar,
     "./routes/settings/index.tsx": $settings_index,
     "./routes/settings/integrations.tsx": $settings_integrations,
     "./routes/settings/templates.tsx": $settings_templates,
     "./routes/standup/index.tsx": $standup_index,
   },
   islands: {
+    "./islands/CalendarEvents.tsx": $CalendarEvents,
     "./islands/DashboardIsland.tsx": $DashboardIsland,
     "./islands/EntryForm.tsx": $EntryForm,
     "./islands/EntryList.tsx": $EntryList,
     "./islands/EntryReactions.tsx": $EntryReactions,
+    "./islands/GitHubSettingsIsland.tsx": $GitHubSettingsIsland,
+    "./islands/GoogleCalendarDisconnect.tsx": $GoogleCalendarDisconnect,
     "./islands/InsightsIsland.tsx": $InsightsIsland,
     "./islands/IntegrationSettingsIsland.tsx": $IntegrationSettingsIsland,
     "./islands/KanbanBoard.tsx": $KanbanBoard,
     "./islands/MemberManager.tsx": $MemberManager,
+    "./islands/PdfExportButton.tsx": $PdfExportButton,
     "./islands/ProjectDeleteButton.tsx": $ProjectDeleteButton,
     "./islands/ProjectForm.tsx": $ProjectForm,
     "./islands/ProjectList.tsx": $ProjectList,
+    "./islands/PwaInstallPrompt.tsx": $PwaInstallPrompt,
     "./islands/ReportView.tsx": $ReportView,
     "./islands/StandupIsland.tsx": $StandupIsland,
     "./islands/TemplateManager.tsx": $TemplateManager,
