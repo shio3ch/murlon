@@ -1,57 +1,24 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
-import { prisma } from "../../../lib/db.ts";
-import type { ApiResponse, ProjectRecord, Visibility } from "../../../lib/types.ts";
+import { domainErrorResponse, unauthorized } from "../../../lib/http.ts";
+import { projectRepository } from "../../../lib/repositories.ts";
+import { createProjectUseCase } from "../../../application/project/create-project.usecase.ts";
+import { listProjectsUseCase } from "../../../application/project/list-projects.usecase.ts";
+import { DomainError } from "../../../domain/shared/domain-error.ts";
+import type { ApiResponse } from "../../../lib/types.ts";
 
 export const handler: Handlers = {
   async GET(req) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
-      );
-    }
+    if (!session) return unauthorized();
 
-    const projects = await prisma.project.findMany({
-      where: {
-        OR: [
-          { ownerId: session.userId },
-          { members: { some: { userId: session.userId } } },
-        ],
-      },
-      include: {
-        _count: { select: { members: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    const data = projects.map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      visibility: p.visibility as Visibility,
-      ownerId: p.ownerId,
-      createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
-      memberCount: p._count.members,
-    }));
-
-    return Response.json(
-      { success: true, data } satisfies ApiResponse<
-        (ProjectRecord & { memberCount: number })[]
-      >,
-    );
+    const projects = await listProjectsUseCase({ projectRepository }, { userId: session.userId });
+    return Response.json({ success: true, data: projects } satisfies ApiResponse);
   },
 
   async POST(req) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
-      );
-    }
+    if (!session) return unauthorized();
 
     let body: { name?: string; description?: string; visibility?: string };
     try {
@@ -63,66 +30,15 @@ export const handler: Handlers = {
       );
     }
 
-    const name = body.name?.trim();
-    if (!name) {
-      return Response.json(
-        { success: false, error: "プロジェクト名を入力してください" } satisfies ApiResponse,
-        { status: 400 },
+    try {
+      const project = await createProjectUseCase(
+        { projectRepository },
+        { ...body, ownerId: session.userId },
       );
+      return Response.json({ success: true, data: project } satisfies ApiResponse, { status: 201 });
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
     }
-
-    if (name.length > 50) {
-      return Response.json(
-        {
-          success: false,
-          error: "プロジェクト名は50文字以内で入力してください",
-        } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    const visibility = body.visibility ?? "PRIVATE";
-    if (!["PRIVATE", "LIMITED", "PUBLIC"].includes(visibility)) {
-      return Response.json(
-        { success: false, error: "無効な公開範囲です" } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    const project = await prisma.$transaction(async (tx) => {
-      const created = await tx.project.create({
-        data: {
-          name,
-          description: body.description?.trim() || null,
-          visibility: visibility as Visibility,
-          ownerId: session.userId,
-        },
-      });
-
-      await tx.projectMember.create({
-        data: {
-          projectId: created.id,
-          userId: session.userId,
-          role: "ADMIN",
-        },
-      });
-
-      return created;
-    });
-
-    const data: ProjectRecord = {
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      visibility: project.visibility as Visibility,
-      ownerId: project.ownerId,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
-    };
-
-    return Response.json(
-      { success: true, data } satisfies ApiResponse<ProjectRecord>,
-      { status: 201 },
-    );
   },
 };

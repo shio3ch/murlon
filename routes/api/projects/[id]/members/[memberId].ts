@@ -1,54 +1,16 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../../../lib/auth.ts";
-import { prisma } from "../../../../../lib/db.ts";
-import type { ApiResponse, ProjectRole } from "../../../../../lib/types.ts";
+import { domainErrorResponse, unauthorized } from "../../../../../lib/http.ts";
+import { projectMemberRepository, projectRepository } from "../../../../../lib/repositories.ts";
+import { updateMemberUseCase } from "../../../../../application/project/update-member.usecase.ts";
+import { removeMemberUseCase } from "../../../../../application/project/remove-member.usecase.ts";
+import { DomainError } from "../../../../../domain/shared/domain-error.ts";
+import type { ApiResponse } from "../../../../../lib/types.ts";
 
 export const handler: Handlers = {
   async PATCH(req, ctx) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
-      );
-    }
-
-    const { id, memberId } = ctx.params;
-
-    const project = await prisma.project.findUnique({
-      where: { id },
-      include: { members: true },
-    });
-
-    if (!project) {
-      return Response.json(
-        { success: false, error: "プロジェクトが見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
-
-    // オーナーまたはADMINのみ変更可能
-    const isOwner = project.ownerId === session.userId;
-    const isAdmin = project.members.some(
-      (m) => m.userId === session.userId && m.role === "ADMIN",
-    );
-    if (!isOwner && !isAdmin) {
-      return Response.json(
-        { success: false, error: "権限がありません" } satisfies ApiResponse,
-        { status: 403 },
-      );
-    }
-
-    const member = await prisma.projectMember.findUnique({
-      where: { id: memberId },
-    });
-
-    if (!member || member.projectId !== id) {
-      return Response.json(
-        { success: false, error: "メンバーが見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
+    if (!session) return unauthorized();
 
     let body: { role?: string };
     try {
@@ -60,91 +22,40 @@ export const handler: Handlers = {
       );
     }
 
-    if (!body.role || !["VIEWER", "COMMENTER", "CONTRIBUTOR", "ADMIN"].includes(body.role)) {
-      return Response.json(
-        { success: false, error: "無効なロールです" } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    const updated = await prisma.projectMember.update({
-      where: { id: memberId },
-      data: { role: body.role as ProjectRole },
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
+    try {
+      const member = await updateMemberUseCase(
+        { projectRepository, projectMemberRepository },
+        {
+          projectId: ctx.params.id,
+          memberId: ctx.params.memberId,
+          requestUserId: session.userId,
+          role: body.role ?? "",
         },
-      },
-    });
-
-    const data = {
-      id: updated.id,
-      userId: updated.userId,
-      role: updated.role as ProjectRole,
-      user: updated.user,
-    };
-
-    return Response.json(
-      { success: true, data } satisfies ApiResponse,
-    );
+      );
+      return Response.json({ success: true, data: member } satisfies ApiResponse);
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
+    }
   },
 
   async DELETE(req, ctx) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
+    if (!session) return unauthorized();
+
+    try {
+      await removeMemberUseCase(
+        { projectRepository, projectMemberRepository },
+        {
+          projectId: ctx.params.id,
+          memberId: ctx.params.memberId,
+          requestUserId: session.userId,
+        },
       );
+      return Response.json({ success: true } satisfies ApiResponse);
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
     }
-
-    const { id, memberId } = ctx.params;
-
-    const project = await prisma.project.findUnique({
-      where: { id },
-      include: { members: true },
-    });
-
-    if (!project) {
-      return Response.json(
-        { success: false, error: "プロジェクトが見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
-
-    // オーナーまたはADMINのみ削除可能
-    const isOwner = project.ownerId === session.userId;
-    const isAdmin = project.members.some(
-      (m) => m.userId === session.userId && m.role === "ADMIN",
-    );
-    if (!isOwner && !isAdmin) {
-      return Response.json(
-        { success: false, error: "権限がありません" } satisfies ApiResponse,
-        { status: 403 },
-      );
-    }
-
-    const member = await prisma.projectMember.findUnique({
-      where: { id: memberId },
-    });
-
-    if (!member || member.projectId !== id) {
-      return Response.json(
-        { success: false, error: "メンバーが見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
-
-    // オーナー自身は削除不可
-    if (member.userId === project.ownerId) {
-      return Response.json(
-        { success: false, error: "オーナーを削除することはできません" } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    await prisma.projectMember.delete({ where: { id: memberId } });
-
-    return Response.json({ success: true } satisfies ApiResponse);
   },
 };

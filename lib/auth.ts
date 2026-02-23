@@ -156,7 +156,11 @@ export async function verifyPassword(
     const hashArray = new Uint8Array(derivedBits);
 
     if (hashArray.length !== expectedHash.length) return false;
-    return crypto.subtle.timingSafeEqual(hashArray, expectedHash);
+    let diff = 0;
+    for (let i = 0; i < hashArray.length; i++) {
+      diff |= hashArray[i] ^ expectedHash[i];
+    }
+    return diff === 0;
   } catch {
     return false;
   }

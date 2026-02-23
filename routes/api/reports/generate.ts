@@ -1,17 +1,16 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
-import { prisma } from "../../../lib/db.ts";
-import { generateReport } from "../../../lib/ai.ts";
+import { domainErrorResponse, unauthorized } from "../../../lib/http.ts";
+import { entryRepository, projectRepository, reportRepository } from "../../../lib/repositories.ts";
+import { generateReportUseCase } from "../../../application/report/generate-report.usecase.ts";
+import { getAIProvider } from "../../../infrastructure/ai/index.ts";
+import { DomainError } from "../../../domain/shared/domain-error.ts";
 import type { ApiResponse, ReportType } from "../../../lib/types.ts";
 
 export const handler: Handlers = {
   async POST(req) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json({ success: false, error: "Unauthorized" } satisfies ApiResponse, {
-        status: 401,
-      });
-    }
+    if (!session) return unauthorized();
 
     let body: {
       type?: string;
@@ -29,9 +28,7 @@ export const handler: Handlers = {
       );
     }
 
-    const { type, startDate: startDateStr, endDate: endDateStr, projectId, promptTemplate } = body;
-
-    if (!type || !["DAILY", "WEEKLY", "MONTHLY"].includes(type)) {
+    if (!body.type || !["DAILY", "WEEKLY", "MONTHLY"].includes(body.type)) {
       return Response.json(
         {
           success: false,
@@ -41,121 +38,44 @@ export const handler: Handlers = {
       );
     }
 
-    if (!startDateStr || !endDateStr) {
+    if (!body.startDate || !body.endDate) {
       return Response.json(
         { success: false, error: "startDate と endDate を指定してください" } satisfies ApiResponse,
         { status: 400 },
       );
     }
 
-    const startDate = new Date(startDateStr + "T00:00:00");
-    const endDate = new Date(endDateStr + "T23:59:59");
+    const startDate = new Date(body.startDate + "T00:00:00");
+    const endDate = new Date(body.endDate + "T23:59:59");
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return Response.json(
+        { success: false, error: "日付形式が正しくありません (YYYY-MM-DD)" } satisfies ApiResponse,
+        { status: 400 },
+      );
+    }
+
+    try {
+      const report = await generateReportUseCase(
         {
-          success: false,
-          error: "日付形式が正しくありません (YYYY-MM-DD)",
-        } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    // Validate project access if projectId is specified
-    let projectName: string | undefined;
-    if (projectId) {
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: { members: { where: { userId: session.userId } } },
-      });
-
-      if (!project) {
-        return Response.json(
-          { success: false, error: "プロジェクトが見つかりません" } satisfies ApiResponse,
-          { status: 404 },
-        );
-      }
-
-      if (project.ownerId !== session.userId && project.members.length === 0) {
-        return Response.json(
-          {
-            success: false,
-            error: "このプロジェクトへのアクセス権がありません",
-          } satisfies ApiResponse,
-          { status: 403 },
-        );
-      }
-
-      projectName = project.name;
-    }
-
-    const whereClause: Record<string, unknown> = {
-      userId: session.userId,
-      createdAt: { gte: startDate, lte: endDate },
-    };
-    if (projectId) {
-      whereClause.projectId = projectId;
-    }
-
-    const entries = await prisma.entry.findMany({
-      where: whereClause,
-      orderBy: { createdAt: "asc" },
-    });
-
-    if (entries.length === 0) {
-      return Response.json(
-        { success: false, error: "指定した期間に分報がありません" } satisfies ApiResponse,
-        { status: 400 },
-      );
-    }
-
-    const reportType = type as ReportType;
-    const content = await generateReport(
-      entries.map((e) => ({
-        ...e,
-        createdAt: new Date(e.createdAt),
-        updatedAt: new Date(e.updatedAt),
-      })),
-      reportType,
-      startDate,
-      endDate,
-      { projectName, promptTemplate: promptTemplate || undefined },
-    );
-
-    // Upsert report (delete existing and create new)
-    const existingWhere: Record<string, unknown> = {
-      userId: session.userId,
-      type: reportType,
-      startDate: { gte: startDate },
-      endDate: { lte: endDate },
-    };
-    if (projectId) {
-      existingWhere.projectId = projectId;
-    }
-
-    const existing = await prisma.report.findFirst({
-      where: existingWhere,
-    });
-
-    if (existing) {
-      await prisma.report.delete({ where: { id: existing.id } });
-    }
-
-    const report = await prisma.report.create({
-      data: {
-        type: reportType,
-        content,
-        startDate,
-        endDate,
-        userId: session.userId,
-        projectId: projectId || null,
-        promptTemplate: promptTemplate || null,
-        entries: {
-          create: entries.map((e) => ({ entryId: e.id })),
+          reportRepository,
+          entryRepository,
+          projectRepository,
+          aiProvider: getAIProvider(),
         },
-      },
-    });
-
-    return Response.json({ success: true, data: report } satisfies ApiResponse, { status: 201 });
+        {
+          userId: session.userId,
+          type: body.type as ReportType,
+          startDate,
+          endDate,
+          projectId: body.projectId,
+          promptTemplate: body.promptTemplate,
+        },
+      );
+      return Response.json({ success: true, data: report } satisfies ApiResponse, { status: 201 });
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
+    }
   },
 };
