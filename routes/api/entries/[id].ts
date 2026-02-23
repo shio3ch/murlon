@@ -57,7 +57,12 @@ export const handler: Handlers = {
       });
     }
 
-    let body: { content?: string };
+    let body: {
+      content?: string;
+      projectId?: string | null;
+      tension?: number | null;
+      templateType?: string | null;
+    };
     try {
       body = await req.json();
     } catch {
@@ -75,9 +80,32 @@ export const handler: Handlers = {
       );
     }
 
+    if (body.tension !== undefined && body.tension !== null) {
+      if (!Number.isInteger(body.tension) || body.tension < 1 || body.tension > 5) {
+        return Response.json(
+          {
+            success: false,
+            error: "テンションは1〜5の整数で指定してください",
+          } satisfies ApiResponse,
+          { status: 400 },
+        );
+      }
+    }
+
+    const updateData: Record<string, unknown> = { content };
+    if ("projectId" in body) {
+      updateData.projectId = body.projectId || null;
+    }
+    if ("tension" in body) {
+      updateData.tension = body.tension ?? null;
+    }
+    if ("templateType" in body) {
+      updateData.templateType = body.templateType || null;
+    }
+
     const updated = await prisma.entry.update({
       where: { id },
-      data: { content },
+      data: updateData,
     });
 
     return Response.json({ success: true, data: updated } satisfies ApiResponse);

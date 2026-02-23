@@ -50,7 +50,7 @@ export class OpenAICompatibleProvider implements AIProvider {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `OpenAI Compatible API error: ${response.status} - ${errorText}`
+        `OpenAI Compatible API error: ${response.status} - ${errorText}`,
       );
     }
 

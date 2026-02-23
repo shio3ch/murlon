@@ -4,18 +4,29 @@
 
 import * as $_app from "./routes/_app.tsx";
 import * as $index from "./routes/index.tsx";
+import * as $dashboard from "./routes/dashboard.tsx";
 import * as $auth_login from "./routes/auth/login.tsx";
 import * as $auth_logout from "./routes/auth/logout.ts";
 import * as $auth_register from "./routes/auth/register.tsx";
+import * as $projects_index from "./routes/projects/index.tsx";
+import * as $projects_new from "./routes/projects/new.tsx";
+import * as $projects_id_index from "./routes/projects/[id]/index.tsx";
+import * as $projects_id_reports from "./routes/projects/[id]/reports.tsx";
+import * as $projects_id_settings from "./routes/projects/[id]/settings.tsx";
 import * as $reports_daily from "./routes/reports/daily.tsx";
 import * as $reports_weekly from "./routes/reports/weekly.tsx";
 import * as $reports_monthly from "./routes/reports/monthly.tsx";
 import * as $api_entries_index from "./routes/api/entries/index.ts";
 import * as $api_entries_id from "./routes/api/entries/[id].ts";
+import * as $api_projects_index from "./routes/api/projects/index.ts";
+import * as $api_projects_id from "./routes/api/projects/[id].ts";
 import * as $api_reports_generate from "./routes/api/reports/generate.ts";
 import * as $DashboardIsland from "./islands/DashboardIsland.tsx";
 import * as $EntryForm from "./islands/EntryForm.tsx";
 import * as $EntryList from "./islands/EntryList.tsx";
+import * as $ProjectDeleteButton from "./islands/ProjectDeleteButton.tsx";
+import * as $ProjectForm from "./islands/ProjectForm.tsx";
+import * as $ProjectList from "./islands/ProjectList.tsx";
 import * as $ReportView from "./islands/ReportView.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
@@ -23,20 +34,31 @@ const manifest = {
   routes: {
     "./routes/_app.tsx": $_app,
     "./routes/index.tsx": $index,
+    "./routes/dashboard.tsx": $dashboard,
     "./routes/auth/login.tsx": $auth_login,
     "./routes/auth/logout.ts": $auth_logout,
     "./routes/auth/register.tsx": $auth_register,
+    "./routes/projects/index.tsx": $projects_index,
+    "./routes/projects/new.tsx": $projects_new,
+    "./routes/projects/[id]/index.tsx": $projects_id_index,
+    "./routes/projects/[id]/reports.tsx": $projects_id_reports,
+    "./routes/projects/[id]/settings.tsx": $projects_id_settings,
     "./routes/reports/daily.tsx": $reports_daily,
     "./routes/reports/weekly.tsx": $reports_weekly,
     "./routes/reports/monthly.tsx": $reports_monthly,
     "./routes/api/entries/index.ts": $api_entries_index,
     "./routes/api/entries/[id].ts": $api_entries_id,
+    "./routes/api/projects/index.ts": $api_projects_index,
+    "./routes/api/projects/[id].ts": $api_projects_id,
     "./routes/api/reports/generate.ts": $api_reports_generate,
   },
   islands: {
     "./islands/DashboardIsland.tsx": $DashboardIsland,
     "./islands/EntryForm.tsx": $EntryForm,
     "./islands/EntryList.tsx": $EntryList,
+    "./islands/ProjectDeleteButton.tsx": $ProjectDeleteButton,
+    "./islands/ProjectForm.tsx": $ProjectForm,
+    "./islands/ProjectList.tsx": $ProjectList,
     "./islands/ReportView.tsx": $ReportView,
   },
   baseUrl: import.meta.url,

@@ -13,7 +13,13 @@ export const handler: Handlers = {
       });
     }
 
-    let body: { type?: string; startDate?: string; endDate?: string };
+    let body: {
+      type?: string;
+      startDate?: string;
+      endDate?: string;
+      projectId?: string;
+      promptTemplate?: string;
+    };
     try {
       body = await req.json();
     } catch {
@@ -23,11 +29,14 @@ export const handler: Handlers = {
       );
     }
 
-    const { type, startDate: startDateStr, endDate: endDateStr } = body;
+    const { type, startDate: startDateStr, endDate: endDateStr, projectId, promptTemplate } = body;
 
     if (!type || !["DAILY", "WEEKLY", "MONTHLY"].includes(type)) {
       return Response.json(
-        { success: false, error: "type は DAILY, WEEKLY, MONTHLY のいずれかを指定してください" } satisfies ApiResponse,
+        {
+          success: false,
+          error: "type は DAILY, WEEKLY, MONTHLY のいずれかを指定してください",
+        } satisfies ApiResponse,
         { status: 400 },
       );
     }
@@ -44,16 +53,52 @@ export const handler: Handlers = {
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return Response.json(
-        { success: false, error: "日付形式が正しくありません (YYYY-MM-DD)" } satisfies ApiResponse,
+        {
+          success: false,
+          error: "日付形式が正しくありません (YYYY-MM-DD)",
+        } satisfies ApiResponse,
         { status: 400 },
       );
     }
 
+    // Validate project access if projectId is specified
+    let projectName: string | undefined;
+    if (projectId) {
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        include: { members: { where: { userId: session.userId } } },
+      });
+
+      if (!project) {
+        return Response.json(
+          { success: false, error: "プロジェクトが見つかりません" } satisfies ApiResponse,
+          { status: 404 },
+        );
+      }
+
+      if (project.ownerId !== session.userId && project.members.length === 0) {
+        return Response.json(
+          {
+            success: false,
+            error: "このプロジェクトへのアクセス権がありません",
+          } satisfies ApiResponse,
+          { status: 403 },
+        );
+      }
+
+      projectName = project.name;
+    }
+
+    const whereClause: Record<string, unknown> = {
+      userId: session.userId,
+      createdAt: { gte: startDate, lte: endDate },
+    };
+    if (projectId) {
+      whereClause.projectId = projectId;
+    }
+
     const entries = await prisma.entry.findMany({
-      where: {
-        userId: session.userId,
-        createdAt: { gte: startDate, lte: endDate },
-      },
+      where: whereClause,
       orderBy: { createdAt: "asc" },
     });
 
@@ -66,20 +111,30 @@ export const handler: Handlers = {
 
     const reportType = type as ReportType;
     const content = await generateReport(
-      entries.map((e) => ({ ...e, createdAt: new Date(e.createdAt), updatedAt: new Date(e.updatedAt) })),
+      entries.map((e) => ({
+        ...e,
+        createdAt: new Date(e.createdAt),
+        updatedAt: new Date(e.updatedAt),
+      })),
       reportType,
       startDate,
       endDate,
+      { projectName, promptTemplate: promptTemplate || undefined },
     );
 
     // Upsert report (delete existing and create new)
+    const existingWhere: Record<string, unknown> = {
+      userId: session.userId,
+      type: reportType,
+      startDate: { gte: startDate },
+      endDate: { lte: endDate },
+    };
+    if (projectId) {
+      existingWhere.projectId = projectId;
+    }
+
     const existing = await prisma.report.findFirst({
-      where: {
-        userId: session.userId,
-        type: reportType,
-        startDate: { gte: startDate },
-        endDate: { lte: endDate },
-      },
+      where: existingWhere,
     });
 
     if (existing) {
@@ -93,6 +148,8 @@ export const handler: Handlers = {
         startDate,
         endDate,
         userId: session.userId,
+        projectId: projectId || null,
+        promptTemplate: promptTemplate || null,
         entries: {
           create: entries.map((e) => ({ entryId: e.id })),
         },

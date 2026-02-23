@@ -4,20 +4,13 @@ import type { EntryRecord } from "../lib/types.ts";
 interface EntryListProps {
   initialEntries: EntryRecord[];
   userId: string;
+  projectMap?: Record<string, string>;
 }
 
 function formatTime(date: Date): string {
   return new Date(date).toLocaleTimeString("ja-JP", {
     hour: "2-digit",
     minute: "2-digit",
-  });
-}
-
-function formatDate(date: Date): string {
-  return new Date(date).toLocaleDateString("ja-JP", {
-    month: "long",
-    day: "numeric",
-    weekday: "short",
   });
 }
 
@@ -36,9 +29,10 @@ function groupByDate(entries: EntryRecord[]): Map<string, EntryRecord[]> {
 interface EntryItemProps {
   entry: EntryRecord;
   onDelete: (id: string) => void;
+  projectName?: string;
 }
 
-function EntryItem({ entry, onDelete }: EntryItemProps) {
+function EntryItem({ entry, onDelete, projectName }: EntryItemProps) {
   const deleting = useSignal(false);
   const editing = useSignal(false);
   const editContent = useSignal(entry.content);
@@ -95,12 +89,14 @@ function EntryItem({ entry, onDelete }: EntryItemProps) {
               />
               <div class="flex gap-2">
                 <button
+                  type="button"
                   onClick={handleSaveEdit}
                   class="text-xs bg-brand-600 text-white px-2 py-1 rounded hover:bg-brand-700"
                 >
                   保存
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     editing.value = false;
                     editContent.value = entry.content;
@@ -113,14 +109,29 @@ function EntryItem({ entry, onDelete }: EntryItemProps) {
             </div>
           )
           : (
-            <p class="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
-              {entry.content}
-            </p>
+            <div>
+              <p class="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
+                {entry.content}
+              </p>
+              <div class="flex items-center gap-2 mt-0.5">
+                {projectName && (
+                  <span class="text-xs text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">
+                    {projectName}
+                  </span>
+                )}
+                {entry.tension && (
+                  <span class="text-xs text-gray-400">
+                    調子: {entry.tension}
+                  </span>
+                )}
+              </div>
+            </div>
           )}
       </div>
 
       <div class="opacity-0 group-hover:opacity-100 flex items-start gap-1 shrink-0 transition-opacity">
         <button
+          type="button"
           onClick={() => (editing.value = true)}
           class="text-xs text-gray-400 hover:text-brand-600 px-1 py-0.5 rounded"
           title="編集"
@@ -128,6 +139,7 @@ function EntryItem({ entry, onDelete }: EntryItemProps) {
           ✏️
         </button>
         <button
+          type="button"
           onClick={handleDelete}
           disabled={deleting.value}
           class="text-xs text-gray-400 hover:text-red-500 px-1 py-0.5 rounded disabled:opacity-50"
@@ -140,7 +152,9 @@ function EntryItem({ entry, onDelete }: EntryItemProps) {
   );
 }
 
-export default function EntryList({ initialEntries, userId }: EntryListProps) {
+export default function EntryList(
+  { initialEntries, projectMap }: EntryListProps,
+) {
   const entries = useSignal<EntryRecord[]>(initialEntries);
 
   function handleDelete(id: string) {
@@ -165,14 +179,24 @@ export default function EntryList({ initialEntries, userId }: EntryListProps) {
       </h2>
 
       {Array.from(grouped.entries()).map(([dateKey, dayEntries]) => (
-        <div key={dateKey} class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          key={dateKey}
+          class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
           <div class="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
             <span class="text-sm font-medium text-gray-600">{dateKey}</span>
             <span class="ml-2 text-xs text-gray-400">{dayEntries.length}件</span>
           </div>
           <div class="px-4 py-1 divide-y divide-gray-50">
             {dayEntries.map((entry) => (
-              <EntryItem key={entry.id} entry={entry} onDelete={handleDelete} />
+              <EntryItem
+                key={entry.id}
+                entry={entry}
+                onDelete={handleDelete}
+                projectName={entry.projectId && projectMap
+                  ? projectMap[entry.projectId]
+                  : undefined}
+              />
             ))}
           </div>
         </div>
