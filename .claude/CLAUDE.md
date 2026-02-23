@@ -50,10 +50,15 @@ deno task docker:ollama:pull  # Ollamaモデル（gemma3）ダウンロード
 
 ### ディレクトリ構成の役割
 
-- `routes/` - ファイルベースルーティング（Fresh）。ページとAPIエンドポイント
+DDDのレイヤードアーキテクチャを採用している。
+
+- `domain/` - ドメイン層。エンティティ・リポジトリインターフェース・ドメインロジック
+- `application/` - アプリケーション層。ユースケース関数（1ファイル1ユースケース）
+- `infrastructure/` - インフラ層。Prismaリポジトリ実装・AIプロバイダー実装
+- `routes/` - プレゼンテーション層。HTTPのglueコードのみ（ビジネスロジックを持たない）
 - `islands/` - クライアントサイドでhydrateされるインタラクティブコンポーネント
 - `components/` - サーバーサイドのみでレンダリングされるコンポーネント
-- `lib/` - 共通ロジック（DB, 認証, AI連携, 型定義）
+- `lib/` - DDD の4層に属さない横断的関心事（セッション管理・DBシングルトン・HTTP共通レスポンス・型定義）
 - `prisma/` - データベーススキーマ定義
 - `generated/client` - Prisma自動生成クライアント（gitignore対象）
 
@@ -69,14 +74,14 @@ Deno KVにセッショントークン（7日間有効）を保存し、httpOnly 
 
 ### AI連携
 
-`lib/ai.ts` で期間内のEntry一覧をフォーマットし、AIプロバイダーへリクエスト。Markdown形式のレポートを生成。
+ユースケース（`application/report/`, `application/standup/`）が `AIProvider` インターフェース経由でAIを呼び出す。Markdown形式のレポートを生成。
 
 AIプロバイダーは環境変数 `AI_PROVIDER` で切り替え可能:
 
-- `lib/ai/provider.ts` - AIProvider インターフェース
-- `lib/ai/anthropic.ts` - Anthropic Claude API 実装
-- `lib/ai/openai-compatible.ts` - OpenAI互換API実装（Ollama等）
-- `lib/ai/index.ts` - ファクトリー（環境変数に基づき切り替え）
+- `infrastructure/ai/provider.ts` - AIProvider インターフェース
+- `infrastructure/ai/anthropic.ts` - Anthropic Claude API 実装
+- `infrastructure/ai/openai-compatible.ts` - OpenAI互換API実装（Ollama等）
+- `infrastructure/ai/index.ts` - ファクトリー（環境変数に基づき切り替え）
 
 ### API統一レスポンス型
 

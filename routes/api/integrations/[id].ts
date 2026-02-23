@@ -1,55 +1,18 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
-import { prisma } from "../../../lib/db.ts";
+import { domainErrorResponse, unauthorized } from "../../../lib/http.ts";
+import { integrationRepository } from "../../../lib/repositories.ts";
+import { updateIntegrationUseCase } from "../../../application/integration/update-integration.usecase.ts";
+import { deleteIntegrationUseCase } from "../../../application/integration/delete-integration.usecase.ts";
+import { DomainError } from "../../../domain/shared/domain-error.ts";
 import type { ApiResponse } from "../../../lib/types.ts";
-
-interface IntegrationSettingData {
-  id: string;
-  userId: string;
-  projectId: string | null;
-  type: "SLACK" | "DISCORD";
-  webhookUrl: string;
-  channelName: string | null;
-  enabled: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export const handler: Handlers = {
   async PUT(req, ctx) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
-      );
-    }
+    if (!session) return unauthorized();
 
-    const { id } = ctx.params;
-
-    const existing = await prisma.integrationSetting.findUnique({
-      where: { id },
-    });
-
-    if (!existing) {
-      return Response.json(
-        { success: false, error: "連携設定が見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
-
-    if (existing.userId !== session.userId) {
-      return Response.json(
-        { success: false, error: "権限がありません" } satisfies ApiResponse,
-        { status: 403 },
-      );
-    }
-
-    let body: {
-      enabled?: boolean;
-      webhookUrl?: string;
-      channelName?: string;
-    };
+    let body: { enabled?: boolean; webhookUrl?: string; channelName?: string | null };
     try {
       body = await req.json();
     } catch {
@@ -59,83 +22,31 @@ export const handler: Handlers = {
       );
     }
 
-    const updateData: Record<string, unknown> = {};
-
-    if (body.enabled !== undefined) {
-      updateData.enabled = body.enabled;
+    try {
+      const setting = await updateIntegrationUseCase(
+        { integrationRepository },
+        { id: ctx.params.id, userId: session.userId, ...body },
+      );
+      return Response.json({ success: true, data: setting } satisfies ApiResponse);
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
     }
-
-    if (body.webhookUrl !== undefined) {
-      const webhookUrl = body.webhookUrl.trim();
-      if (!webhookUrl.startsWith("https://")) {
-        return Response.json(
-          {
-            success: false,
-            error: "Webhook URLはhttps://から始まる有効なURLを入力してください",
-          } satisfies ApiResponse,
-          { status: 400 },
-        );
-      }
-      updateData.webhookUrl = webhookUrl;
-    }
-
-    if (body.channelName !== undefined) {
-      updateData.channelName = body.channelName.trim() || null;
-    }
-
-    const updated = await prisma.integrationSetting.update({
-      where: { id },
-      data: updateData,
-    });
-
-    const data: IntegrationSettingData = {
-      id: updated.id,
-      userId: updated.userId,
-      projectId: updated.projectId,
-      type: updated.type as "SLACK" | "DISCORD",
-      webhookUrl: updated.webhookUrl,
-      channelName: updated.channelName,
-      enabled: updated.enabled,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-    };
-
-    return Response.json(
-      { success: true, data } satisfies ApiResponse<IntegrationSettingData>,
-    );
   },
 
   async DELETE(req, ctx) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "認証が必要です" } satisfies ApiResponse,
-        { status: 401 },
+    if (!session) return unauthorized();
+
+    try {
+      await deleteIntegrationUseCase(
+        { integrationRepository },
+        { id: ctx.params.id, userId: session.userId },
       );
+      return Response.json({ success: true } satisfies ApiResponse);
+    } catch (e) {
+      if (e instanceof DomainError) return domainErrorResponse(e);
+      throw e;
     }
-
-    const { id } = ctx.params;
-
-    const existing = await prisma.integrationSetting.findUnique({
-      where: { id },
-    });
-
-    if (!existing) {
-      return Response.json(
-        { success: false, error: "連携設定が見つかりません" } satisfies ApiResponse,
-        { status: 404 },
-      );
-    }
-
-    if (existing.userId !== session.userId) {
-      return Response.json(
-        { success: false, error: "権限がありません" } satisfies ApiResponse,
-        { status: 403 },
-      );
-    }
-
-    await prisma.integrationSetting.delete({ where: { id } });
-
-    return Response.json({ success: true } satisfies ApiResponse);
   },
 };

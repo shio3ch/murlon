@@ -1,5 +1,6 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
+import { unauthorized } from "../../../lib/http.ts";
 import { prisma } from "../../../lib/db.ts";
 import type { ApiResponse } from "../../../lib/types.ts";
 
@@ -42,12 +43,7 @@ export interface InsightsData {
 export const handler: Handlers = {
   async GET(req) {
     const session = await getSession(req);
-    if (!session) {
-      return Response.json(
-        { success: false, error: "Unauthorized" } satisfies ApiResponse,
-        { status: 401 },
-      );
-    }
+    if (!session) return unauthorized();
 
     const url = new URL(req.url);
     const period = url.searchParams.get("period") === "90d" ? 90 : 30;
