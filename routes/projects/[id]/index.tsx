@@ -155,14 +155,28 @@ export default function ProjectDetailPage({ data }: PageProps<ProjectPageData>) 
               </div>
               {project.description && <p class="text-gray-500 mt-2">{project.description}</p>}
             </div>
-            {(isOwner || isAdmin) && (
+            <div class="flex items-center gap-2">
               <a
-                href={`/projects/${project.id}/settings`}
+                href={`/projects/${project.id}/tasks`}
                 class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
               >
-                設定
+                タスク管理
               </a>
-            )}
+              <a
+                href={`/projects/${project.id}/reports`}
+                class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+              >
+                レポート
+              </a>
+              {(isOwner || isAdmin) && (
+                <a
+                  href={`/projects/${project.id}/settings`}
+                  class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+                >
+                  設定
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Members */}

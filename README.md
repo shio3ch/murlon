@@ -6,16 +6,16 @@
 
 ## 技術スタック
 
-| カテゴリ | 技術 |
-|---------|------|
-| ランタイム | [Deno](https://deno.land/) v2.x |
+| カテゴリ       | 技術                                                     |
+| -------------- | -------------------------------------------------------- |
+| ランタイム     | [Deno](https://deno.land/) v2.x                          |
 | フロントエンド | [Fresh](https://fresh.deno.dev/) + Preact + Tailwind CSS |
-| バックエンド | Fresh API Routes |
-| ORM | [Prisma](https://www.prisma.io/) |
-| 認証 | Deno KV セッション管理 + WebCrypto (PBKDF2) |
-| データベース | PostgreSQL (Supabase 推奨) |
-| KVストア | Deno KV (セッション・キャッシュ) |
-| AI | Anthropic Claude API (claude-sonnet-4-6) |
+| バックエンド   | Fresh API Routes                                         |
+| ORM            | [Prisma](https://www.prisma.io/)                         |
+| 認証           | Deno KV セッション管理 + WebCrypto (PBKDF2)              |
+| データベース   | PostgreSQL (Supabase 推奨)                               |
+| KVストア       | Deno KV (セッション・キャッシュ)                         |
+| AI             | Anthropic Claude API (claude-sonnet-4-6)                 |
 
 ## 機能
 
@@ -53,12 +53,12 @@ deno task dev
 
 ### 環境変数
 
-| 変数名 | 説明 |
-|--------|------|
-| `DATABASE_URL` | PostgreSQL接続URL |
-| `DIRECT_URL` | PostgreSQL直接接続URL (Supabase用) |
-| `ANTHROPIC_API_KEY` | Anthropic Claude APIキー |
-| `DENO_ENV` | 環境 (`development` / `production`) |
+| 変数名              | 説明                                |
+| ------------------- | ----------------------------------- |
+| `DATABASE_URL`      | PostgreSQL接続URL                   |
+| `DIRECT_URL`        | PostgreSQL直接接続URL (Supabase用)  |
+| `ANTHROPIC_API_KEY` | Anthropic Claude APIキー            |
+| `DENO_ENV`          | 環境 (`development` / `production`) |
 
 ## 開発コマンド
 

@@ -1,10 +1,5 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
-import {
-  createSession,
-  getSession,
-  setSessionCookie,
-  verifyPassword,
-} from "../../lib/auth.ts";
+import { createSession, getSession, setSessionCookie, verifyPassword } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
 
 interface LoginData {

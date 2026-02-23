@@ -3,7 +3,12 @@ import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
 import Header from "../../../components/Header.tsx";
 import ReportView from "../../../islands/ReportView.tsx";
-import type { EntryRecord, ReportRecord, ReportType } from "../../../lib/types.ts";
+import type {
+  EntryRecord,
+  ReportRecord,
+  ReportTemplateRecord,
+  ReportType,
+} from "../../../lib/types.ts";
 
 interface ProjectReportsPageData {
   user: { id: string; name: string; email: string };
@@ -14,6 +19,7 @@ interface ProjectReportsPageData {
   reportType: ReportType;
   startDate: string;
   endDate: string;
+  templates: ReportTemplateRecord[];
 }
 
 function getDateRange(
@@ -80,6 +86,24 @@ export const handler: Handlers<ProjectReportsPageData> = {
     const startDateTime = new Date(startDate + "T00:00:00");
     const endDateTime = new Date(endDate + "T23:59:59");
 
+    let templateRows: Array<{
+      id: string;
+      userId: string | null;
+      name: string;
+      type: string;
+      prompt: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }> = [];
+    try {
+      templateRows = await prisma.reportTemplate.findMany({
+        where: { OR: [{ userId: session.userId }, { userId: null }] },
+        orderBy: { createdAt: "asc" },
+      });
+    } catch {
+      // reportTemplate テーブルが未作成の場合は空配列
+    }
+
     const [entries, currentReport, reports] = await Promise.all([
       prisma.entry.findMany({
         where: {
@@ -108,6 +132,16 @@ export const handler: Handlers<ProjectReportsPageData> = {
       }),
     ]);
 
+    const templates: ReportTemplateRecord[] = templateRows.map((r) => ({
+      id: r.id,
+      userId: r.userId,
+      name: r.name,
+      type: r.type as ReportType,
+      prompt: r.prompt,
+      createdAt: new Date(r.createdAt),
+      updatedAt: new Date(r.updatedAt),
+    }));
+
     const mapReport = (r: typeof currentReport) =>
       r
         ? {
@@ -133,6 +167,7 @@ export const handler: Handlers<ProjectReportsPageData> = {
       reportType,
       startDate,
       endDate,
+      templates,
     });
   },
 };
@@ -149,7 +184,7 @@ function reportTypeLabel(type: ReportType): string {
 }
 
 export default function ProjectReportsPage({ data }: PageProps<ProjectReportsPageData>) {
-  const { user, project, reports, currentReport, entries, reportType, startDate, endDate } = data;
+  const { user, project, reports, currentReport, entries, reportType, startDate, endDate, templates } = data;
 
   return (
     <div class="min-h-screen bg-gray-50">
@@ -197,6 +232,7 @@ export default function ProjectReportsPage({ data }: PageProps<ProjectReportsPag
           endDate={endDate}
           userId={user.id}
           projectId={project.id}
+          templates={templates}
         />
 
         {/* Past reports */}
