@@ -1,10 +1,5 @@
 import { useState } from "preact/hooks";
-import type {
-  ApiResponse,
-  TaskPriority,
-  TaskRecord,
-  TaskStatus,
-} from "../lib/types.ts";
+import type { ApiResponse, TaskPriority, TaskRecord, TaskStatus } from "../lib/types.ts";
 
 interface KanbanBoardProps {
   initialTasks: TaskRecord[];
@@ -88,9 +83,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
       title: task.title,
       description: task.description || "",
       priority: task.priority,
-      dueDate: task.dueDate
-        ? new Date(task.dueDate).toISOString().split("T")[0]
-        : "",
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
       status: task.status,
     });
     setError("");
@@ -129,9 +122,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
         });
         const json: ApiResponse<TaskRecord> = await res.json();
         if (json.success && json.data) {
-          setTasks((prev) =>
-            prev.map((t) => (t.id === editingTask.id ? json.data! : t))
-          );
+          setTasks((prev) => prev.map((t) => (t.id === editingTask.id ? json.data! : t)));
           closeModal();
         } else {
           setError(json.error || "更新に失敗しました");
@@ -204,8 +195,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
     }
   }
 
-  const tasksByStatus = (status: TaskStatus) =>
-    tasks.filter((t) => t.status === status);
+  const tasksByStatus = (status: TaskStatus) => tasks.filter((t) => t.status === status);
 
   return (
     <div>
@@ -378,7 +368,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                               </button>
                             )}
                             {STATUS_ORDER.indexOf(task.status) <
-                              STATUS_ORDER.length - 1 && (
+                                STATUS_ORDER.length - 1 && (
                               <button
                                 type="button"
                                 onClick={() => moveTask(task.id, "next")}
@@ -446,8 +436,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                     setForm({
                       ...form,
                       title: (e.target as HTMLInputElement).value,
-                    })
-                  }
+                    })}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   placeholder="タスクのタイトル"
                   autoFocus
@@ -464,8 +453,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                     setForm({
                       ...form,
                       description: (e.target as HTMLTextAreaElement).value,
-                    })
-                  }
+                    })}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
                   rows={3}
                   placeholder="詳細な説明（任意）"
@@ -484,8 +472,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                         ...form,
                         priority: (e.target as HTMLSelectElement)
                           .value as TaskPriority,
-                      })
-                    }
+                      })}
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   >
                     <option value="HIGH">高</option>
@@ -505,8 +492,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                       setForm({
                         ...form,
                         dueDate: (e.target as HTMLInputElement).value,
-                      })
-                    }
+                      })}
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 </div>
@@ -524,8 +510,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                         ...form,
                         status: (e.target as HTMLSelectElement)
                           .value as TaskStatus,
-                      })
-                    }
+                      })}
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   >
                     {COLUMNS.map((col) => (
@@ -538,17 +523,17 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
               )}
 
               <div class="flex items-center justify-between pt-2">
-                {editingTask ? (
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(editingTask.id)}
-                    class="text-sm text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    削除
-                  </button>
-                ) : (
-                  <div />
-                )}
+                {editingTask
+                  ? (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(editingTask.id)}
+                      class="text-sm text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      削除
+                    </button>
+                  )
+                  : <div />}
                 <div class="flex gap-2">
                   <button
                     type="button"
@@ -562,11 +547,7 @@ export default function KanbanBoard({ initialTasks, projectId }: KanbanBoardProp
                     disabled={loading}
                     class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
                   >
-                    {loading
-                      ? "処理中..."
-                      : editingTask
-                        ? "更新"
-                        : "作成"}
+                    {loading ? "処理中..." : editingTask ? "更新" : "作成"}
                   </button>
                 </div>
               </div>

@@ -1,9 +1,11 @@
 import { useSignal } from "@preact/signals";
 import type { EntryRecord } from "../lib/types.ts";
+import EntryReactions from "./EntryReactions.tsx";
 
 interface EntryListProps {
   initialEntries: EntryRecord[];
   userId: string;
+  currentUserId: string;
   projectMap?: Record<string, string>;
 }
 
@@ -30,9 +32,10 @@ interface EntryItemProps {
   entry: EntryRecord;
   onDelete: (id: string) => void;
   projectName?: string;
+  currentUserId: string;
 }
 
-function EntryItem({ entry, onDelete, projectName }: EntryItemProps) {
+function EntryItem({ entry, onDelete, projectName, currentUserId }: EntryItemProps) {
   const deleting = useSignal(false);
   const editing = useSignal(false);
   const editContent = useSignal(entry.content);
@@ -125,6 +128,7 @@ function EntryItem({ entry, onDelete, projectName }: EntryItemProps) {
                   </span>
                 )}
               </div>
+              <EntryReactions entryId={entry.id} currentUserId={currentUserId} />
             </div>
           )}
       </div>
@@ -153,7 +157,7 @@ function EntryItem({ entry, onDelete, projectName }: EntryItemProps) {
 }
 
 export default function EntryList(
-  { initialEntries, projectMap }: EntryListProps,
+  { initialEntries, currentUserId, projectMap }: EntryListProps,
 ) {
   const entries = useSignal<EntryRecord[]>(initialEntries);
 
@@ -196,6 +200,7 @@ export default function EntryList(
                 projectName={entry.projectId && projectMap
                   ? projectMap[entry.projectId]
                   : undefined}
+                currentUserId={currentUserId}
               />
             ))}
           </div>

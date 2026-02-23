@@ -1,12 +1,7 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
-import type {
-  ApiResponse,
-  TaskPriority,
-  TaskRecord,
-  TaskStatus,
-} from "../../../lib/types.ts";
+import type { ApiResponse, TaskPriority, TaskRecord, TaskStatus } from "../../../lib/types.ts";
 
 export const handler: Handlers = {
   async GET(req, ctx) {

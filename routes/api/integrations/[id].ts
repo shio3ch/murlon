@@ -1,10 +1,22 @@
 import { type Handlers } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
-import type { ApiResponse, ReportTemplateRecord, ReportType } from "../../../lib/types.ts";
+import type { ApiResponse } from "../../../lib/types.ts";
+
+interface IntegrationSettingData {
+  id: string;
+  userId: string;
+  projectId: string | null;
+  type: "SLACK" | "DISCORD";
+  webhookUrl: string;
+  channelName: string | null;
+  enabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export const handler: Handlers = {
-  async PATCH(req, ctx) {
+  async PUT(req, ctx) {
     const session = await getSession(req);
     if (!session) {
       return Response.json(
@@ -15,25 +27,29 @@ export const handler: Handlers = {
 
     const { id } = ctx.params;
 
-    const template = await prisma.reportTemplate.findUnique({
+    const existing = await prisma.integrationSetting.findUnique({
       where: { id },
     });
 
-    if (!template) {
+    if (!existing) {
       return Response.json(
-        { success: false, error: "テンプレートが見つかりません" } satisfies ApiResponse,
+        { success: false, error: "連携設定が見つかりません" } satisfies ApiResponse,
         { status: 404 },
       );
     }
 
-    if (template.userId !== session.userId) {
+    if (existing.userId !== session.userId) {
       return Response.json(
         { success: false, error: "権限がありません" } satisfies ApiResponse,
         { status: 403 },
       );
     }
 
-    let body: { name?: string; type?: string; prompt?: string };
+    let body: {
+      enabled?: boolean;
+      webhookUrl?: string;
+      channelName?: string;
+    };
     try {
       body = await req.json();
     } catch {
@@ -45,55 +61,47 @@ export const handler: Handlers = {
 
     const updateData: Record<string, unknown> = {};
 
-    if (body.name !== undefined) {
-      const name = body.name.trim();
-      if (!name) {
+    if (body.enabled !== undefined) {
+      updateData.enabled = body.enabled;
+    }
+
+    if (body.webhookUrl !== undefined) {
+      const webhookUrl = body.webhookUrl.trim();
+      if (!webhookUrl.startsWith("https://")) {
         return Response.json(
-          { success: false, error: "テンプレート名を入力してください" } satisfies ApiResponse,
+          {
+            success: false,
+            error: "Webhook URLはhttps://から始まる有効なURLを入力してください",
+          } satisfies ApiResponse,
           { status: 400 },
         );
       }
-      updateData.name = name;
+      updateData.webhookUrl = webhookUrl;
     }
 
-    if (body.type !== undefined) {
-      if (!["DAILY", "WEEKLY", "MONTHLY"].includes(body.type)) {
-        return Response.json(
-          { success: false, error: "無効なレポートタイプです" } satisfies ApiResponse,
-          { status: 400 },
-        );
-      }
-      updateData.type = body.type;
+    if (body.channelName !== undefined) {
+      updateData.channelName = body.channelName.trim() || null;
     }
 
-    if (body.prompt !== undefined) {
-      const prompt = body.prompt.trim();
-      if (!prompt) {
-        return Response.json(
-          { success: false, error: "プロンプトを入力してください" } satisfies ApiResponse,
-          { status: 400 },
-        );
-      }
-      updateData.prompt = prompt;
-    }
-
-    const updated = await prisma.reportTemplate.update({
+    const updated = await prisma.integrationSetting.update({
       where: { id },
       data: updateData,
     });
 
-    const data: ReportTemplateRecord = {
+    const data: IntegrationSettingData = {
       id: updated.id,
       userId: updated.userId,
-      name: updated.name,
-      type: updated.type as ReportType,
-      prompt: updated.prompt,
+      projectId: updated.projectId,
+      type: updated.type as "SLACK" | "DISCORD",
+      webhookUrl: updated.webhookUrl,
+      channelName: updated.channelName,
+      enabled: updated.enabled,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
     };
 
     return Response.json(
-      { success: true, data } satisfies ApiResponse<ReportTemplateRecord>,
+      { success: true, data } satisfies ApiResponse<IntegrationSettingData>,
     );
   },
 
@@ -108,25 +116,25 @@ export const handler: Handlers = {
 
     const { id } = ctx.params;
 
-    const template = await prisma.reportTemplate.findUnique({
+    const existing = await prisma.integrationSetting.findUnique({
       where: { id },
     });
 
-    if (!template) {
+    if (!existing) {
       return Response.json(
-        { success: false, error: "テンプレートが見つかりません" } satisfies ApiResponse,
+        { success: false, error: "連携設定が見つかりません" } satisfies ApiResponse,
         { status: 404 },
       );
     }
 
-    if (template.userId !== session.userId) {
+    if (existing.userId !== session.userId) {
       return Response.json(
         { success: false, error: "権限がありません" } satisfies ApiResponse,
         { status: 403 },
       );
     }
 
-    await prisma.reportTemplate.delete({ where: { id } });
+    await prisma.integrationSetting.delete({ where: { id } });
 
     return Response.json({ success: true } satisfies ApiResponse);
   },

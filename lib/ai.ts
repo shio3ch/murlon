@@ -79,6 +79,42 @@ Markdownフォーマットで出力してください。`;
 }
 
 /**
+ * Generate a standup from a list of entries using AI
+ */
+export async function generateStandup(
+  entries: EntryRecord[],
+  projectName?: string,
+): Promise<string> {
+  if (entries.length === 0) {
+    throw new Error("スタンドアップを生成するための分報がありません");
+  }
+
+  const entryList = formatEntries(entries);
+  const projectContext = projectName ? `プロジェクト「${projectName}」の` : "";
+
+  const prompt = `以下は、${projectContext}作業ログ（分報）です。
+この内容をもとに、Scrum形式のスタンドアップを日本語で生成してください。
+
+## 分報一覧
+${entryList}
+
+## 出力形式
+**昨日やったこと**
+- ...
+
+**今日やること**
+- ...
+
+**ブロッカー**
+- ...（なければ「なし」と記載）
+
+簡潔でチームに共有しやすい文体でMarkdownフォーマットで出力してください。`;
+
+  const provider = getAIProvider();
+  return await provider.generateText(prompt);
+}
+
+/**
  * Generate insights from recent entries
  */
 export async function generateInsights(entries: EntryRecord[]): Promise<string> {

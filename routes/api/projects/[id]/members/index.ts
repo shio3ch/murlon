@@ -131,7 +131,10 @@ export const handler: Handlers = {
     // オーナー自身は追加不可
     if (targetUser.id === project.ownerId) {
       return Response.json(
-        { success: false, error: "オーナーをメンバーとして追加することはできません" } satisfies ApiResponse,
+        {
+          success: false,
+          error: "オーナーをメンバーとして追加することはできません",
+        } satisfies ApiResponse,
         { status: 400 },
       );
     }

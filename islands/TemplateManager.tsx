@@ -70,9 +70,7 @@ export default function TemplateManager(
 
     try {
       const isEdit = editingId.value !== null;
-      const url = isEdit
-        ? `/api/templates/${editingId.value}`
-        : "/api/templates";
+      const url = isEdit ? `/api/templates/${editingId.value}` : "/api/templates";
       const method = isEdit ? "PATCH" : "POST";
 
       const res = await fetch(url, {
@@ -98,9 +96,7 @@ export default function TemplateManager(
       };
 
       if (isEdit) {
-        templates.value = templates.value.map((t) =>
-          t.id === editingId.value ? saved : t
-        );
+        templates.value = templates.value.map((t) => t.id === editingId.value ? saved : t);
       } else {
         templates.value = [...templates.value, saved];
       }
@@ -237,39 +233,37 @@ export default function TemplateManager(
 
         <div class="space-y-3">
           {custom.map((template) =>
-            editingId.value === template.id
-              ? null
-              : (
-                <div
-                  key={template.id}
-                  class="bg-white border border-gray-200 rounded-lg p-4"
-                >
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-900">
-                      {template.name}
-                    </span>
-                    <div class="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => startEdit(template)}
-                        class="text-xs text-brand-600 hover:text-brand-700 font-medium"
-                      >
-                        編集
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(template)}
-                        class="text-xs text-red-500 hover:text-red-700 font-medium"
-                      >
-                        削除
-                      </button>
-                    </div>
+            editingId.value === template.id ? null : (
+              <div
+                key={template.id}
+                class="bg-white border border-gray-200 rounded-lg p-4"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-900">
+                    {template.name}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(template)}
+                      class="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                    >
+                      編集
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(template)}
+                      class="text-xs text-red-500 hover:text-red-700 font-medium"
+                    >
+                      削除
+                    </button>
                   </div>
-                  <p class="text-xs text-gray-600 whitespace-pre-wrap">
-                    {template.prompt}
-                  </p>
                 </div>
-              )
+                <p class="text-xs text-gray-600 whitespace-pre-wrap">
+                  {template.prompt}
+                </p>
+              </div>
+            )
           )}
         </div>
       </div>
@@ -293,8 +287,7 @@ export default function TemplateManager(
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm"
               placeholder="テンプレート名を入力"
               value={formName.value}
-              onInput={(e) =>
-                (formName.value = (e.target as HTMLInputElement).value)}
+              onInput={(e) => (formName.value = (e.target as HTMLInputElement).value)}
               disabled={submitting.value}
             />
           </div>
@@ -306,9 +299,9 @@ export default function TemplateManager(
             <select
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
               value={formType.value}
-              onChange={(e) =>
-                (formType.value =
-                  (e.target as HTMLSelectElement).value as ReportType)}
+              onChange={(
+                e,
+              ) => (formType.value = (e.target as HTMLSelectElement).value as ReportType)}
               disabled={submitting.value}
             >
               {TYPES.map((t) => (
@@ -328,8 +321,7 @@ export default function TemplateManager(
               rows={6}
               placeholder="AIに渡すプロンプトを入力"
               value={formPrompt.value}
-              onInput={(e) =>
-                (formPrompt.value = (e.target as HTMLTextAreaElement).value)}
+              onInput={(e) => (formPrompt.value = (e.target as HTMLTextAreaElement).value)}
               disabled={submitting.value}
             />
           </div>
@@ -340,11 +332,7 @@ export default function TemplateManager(
               disabled={submitting.value}
               class="bg-brand-600 hover:bg-brand-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
             >
-              {submitting.value
-                ? "保存中..."
-                : editingId.value
-                ? "更新"
-                : "作成"}
+              {submitting.value ? "保存中..." : editingId.value ? "更新" : "作成"}
             </button>
             <button
               type="button"

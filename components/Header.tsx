@@ -44,6 +44,25 @@ export default function Header({ user }: HeaderProps) {
           >
             月報
           </a>
+          <a
+            href="/insights"
+            class="text-sm text-gray-600 hover:text-brand-600 font-medium"
+          >
+            インサイト
+          </a>
+          <a
+            href="/standup"
+            class="text-sm text-gray-600 hover:text-brand-600 font-medium"
+          >
+            スタンドアップ
+          </a>
+
+          <a
+            href="/settings"
+            class="text-sm text-gray-600 hover:text-brand-600 font-medium"
+          >
+            設定
+          </a>
 
           <div class="flex items-center gap-3 ml-2 pl-2 border-l border-gray-200">
             <span class="text-sm text-gray-500 hidden sm:inline">{user.name}</span>
