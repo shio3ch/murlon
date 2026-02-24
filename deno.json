@@ -2,6 +2,7 @@
   "lock": false,
   "nodeModulesDir": "auto",
   "tasks": {
+    "test": "deno test --allow-read --allow-env tests/",
     "check": "deno fmt --check && deno lint && deno check **/*.ts **/*.tsx",
     "cli": "echo \"import '\\$0'\" | deno run --unstable -",
     "build": "deno run -A dev.ts build",
