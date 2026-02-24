@@ -1,6 +1,9 @@
 import type { PrismaClient } from "@prisma/client";
 import type { Reaction } from "../../domain/reaction/reaction.entity.ts";
-import type { IReactionRepository, ReactionSummary } from "../../domain/reaction/reaction.repository.ts";
+import type {
+  IReactionRepository,
+  ReactionSummary,
+} from "../../domain/reaction/reaction.repository.ts";
 
 function toReaction(record: {
   id: string;
@@ -31,7 +34,11 @@ export class PrismaReactionRepository implements IReactionRepository {
     return records.map(toReaction);
   }
 
-  async findByEntryAndUser(entryId: string, userId: string, emoji: string): Promise<Reaction | null> {
+  async findByEntryAndUser(
+    entryId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<Reaction | null> {
     const record = await this.prisma.reaction.findUnique({
       where: { entryId_userId_emoji: { entryId, userId, emoji } },
     });

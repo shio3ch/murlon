@@ -1,8 +1,10 @@
 interface HeaderProps {
-  user: { name: string; email: string };
+  user: { name: string; email: string; avatarUrl?: string | null };
 }
 
 export default function Header({ user }: HeaderProps) {
+  const initial = user.name.charAt(0).toUpperCase();
+
   return (
     <header class="bg-white border-b border-gray-200 shadow-sm">
       <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -65,7 +67,27 @@ export default function Header({ user }: HeaderProps) {
           </a>
 
           <div class="flex items-center gap-3 ml-2 pl-2 border-l border-gray-200">
-            <span class="text-sm text-gray-500 hidden sm:inline">{user.name}</span>
+            <a
+              href="/settings/profile"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              {user.avatarUrl
+                ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    class="w-8 h-8 rounded-full object-cover"
+                  />
+                )
+                : (
+                  <span class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold flex items-center justify-center">
+                    {initial}
+                  </span>
+                )}
+              <span class="text-sm text-gray-500 hidden sm:inline">
+                {user.name}
+              </span>
+            </a>
             <form method="POST" action="/auth/logout">
               <button
                 type="submit"

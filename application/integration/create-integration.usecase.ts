@@ -1,5 +1,8 @@
 import { DomainError } from "../../domain/shared/domain-error.ts";
-import type { IntegrationSetting, IntegrationType } from "../../domain/integration/integration.entity.ts";
+import type {
+  IntegrationSetting,
+  IntegrationType,
+} from "../../domain/integration/integration.entity.ts";
 import type { IIntegrationRepository } from "../../domain/integration/integration.repository.ts";
 
 export interface CreateIntegrationDeps {

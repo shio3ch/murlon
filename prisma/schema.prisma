@@ -9,14 +9,22 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  GITHUB
+}
+
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String?
   name         String
   avatarUrl    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  authProvider AuthProvider @default(LOCAL)
+  externalId   String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   entries                  Entry[]
   reports                  Report[]
@@ -31,6 +39,7 @@ model User {
   githubConnection         GitHubConnection?
   googleCalendarConnection GoogleCalendarConnection?
 
+  @@unique([authProvider, externalId])
   @@map("users")
 }
 

@@ -60,6 +60,7 @@ export const handler: Handlers<ProjectPageData> = {
       where: { projectId: id },
       orderBy: { createdAt: "desc" },
       take: 50,
+      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
     });
 
     const isOwner = project.ownerId === session.userId;
@@ -90,6 +91,9 @@ export const handler: Handlers<ProjectPageData> = {
         ...e,
         createdAt: new Date(e.createdAt),
         updatedAt: new Date(e.updatedAt),
+        author: e.user
+          ? { id: e.user.id, name: e.user.name, avatarUrl: e.user.avatarUrl }
+          : undefined,
       })),
       isOwner,
       isAdmin,

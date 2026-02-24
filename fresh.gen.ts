@@ -33,6 +33,7 @@ import * as $api_tasks_id_ from "./routes/api/tasks/[id].ts";
 import * as $api_tasks_index from "./routes/api/tasks/index.ts";
 import * as $api_templates_id_ from "./routes/api/templates/[id].ts";
 import * as $api_templates_index from "./routes/api/templates/index.ts";
+import * as $api_users_profile from "./routes/api/users/profile.ts";
 import * as $auth_login from "./routes/auth/login.tsx";
 import * as $auth_logout from "./routes/auth/logout.ts";
 import * as $auth_register from "./routes/auth/register.tsx";
@@ -52,6 +53,7 @@ import * as $settings_github from "./routes/settings/github.tsx";
 import * as $settings_google_calendar from "./routes/settings/google-calendar.tsx";
 import * as $settings_index from "./routes/settings/index.tsx";
 import * as $settings_integrations from "./routes/settings/integrations.tsx";
+import * as $settings_profile from "./routes/settings/profile.tsx";
 import * as $settings_templates from "./routes/settings/templates.tsx";
 import * as $standup_index from "./routes/standup/index.tsx";
 import * as $CalendarEvents from "./islands/CalendarEvents.tsx";
@@ -66,6 +68,7 @@ import * as $IntegrationSettingsIsland from "./islands/IntegrationSettingsIsland
 import * as $KanbanBoard from "./islands/KanbanBoard.tsx";
 import * as $MemberManager from "./islands/MemberManager.tsx";
 import * as $PdfExportButton from "./islands/PdfExportButton.tsx";
+import * as $ProfileSettings from "./islands/ProfileSettings.tsx";
 import * as $ProjectDeleteButton from "./islands/ProjectDeleteButton.tsx";
 import * as $ProjectForm from "./islands/ProjectForm.tsx";
 import * as $ProjectList from "./islands/ProjectList.tsx";
@@ -108,6 +111,7 @@ const manifest = {
     "./routes/api/tasks/index.ts": $api_tasks_index,
     "./routes/api/templates/[id].ts": $api_templates_id_,
     "./routes/api/templates/index.ts": $api_templates_index,
+    "./routes/api/users/profile.ts": $api_users_profile,
     "./routes/auth/login.tsx": $auth_login,
     "./routes/auth/logout.ts": $auth_logout,
     "./routes/auth/register.tsx": $auth_register,
@@ -127,6 +131,7 @@ const manifest = {
     "./routes/settings/google-calendar.tsx": $settings_google_calendar,
     "./routes/settings/index.tsx": $settings_index,
     "./routes/settings/integrations.tsx": $settings_integrations,
+    "./routes/settings/profile.tsx": $settings_profile,
     "./routes/settings/templates.tsx": $settings_templates,
     "./routes/standup/index.tsx": $standup_index,
   },
@@ -143,6 +148,7 @@ const manifest = {
     "./islands/KanbanBoard.tsx": $KanbanBoard,
     "./islands/MemberManager.tsx": $MemberManager,
     "./islands/PdfExportButton.tsx": $PdfExportButton,
+    "./islands/ProfileSettings.tsx": $ProfileSettings,
     "./islands/ProjectDeleteButton.tsx": $ProjectDeleteButton,
     "./islands/ProjectForm.tsx": $ProjectForm,
     "./islands/ProjectList.tsx": $ProjectList,

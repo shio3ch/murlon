@@ -11,10 +11,14 @@ export function unauthorized(): Response {
 export function domainErrorResponse(e: DomainError): Response {
   const status = (() => {
     switch (e.code) {
-      case "NOT_FOUND": return 404;
-      case "FORBIDDEN": return 403;
-      case "CONFLICT": return 409;
-      default: return 400;
+      case "NOT_FOUND":
+        return 404;
+      case "FORBIDDEN":
+        return 403;
+      case "CONFLICT":
+        return 409;
+      default:
+        return 400;
     }
   })();
   return Response.json({ success: false, error: e.message } satisfies ApiResponse, { status });

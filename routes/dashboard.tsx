@@ -28,6 +28,7 @@ export const handler: Handlers<DashboardData> = {
         where: { userId: session.userId },
         orderBy: { createdAt: "desc" },
         take: 50,
+        include: { user: { select: { id: true, name: true, avatarUrl: true } } },
       }),
       prisma.project.findMany({
         where: { ownerId: session.userId },
@@ -61,6 +62,9 @@ export const handler: Handlers<DashboardData> = {
         ...e,
         createdAt: new Date(e.createdAt),
         updatedAt: new Date(e.updatedAt),
+        author: e.user
+          ? { id: e.user.id, name: e.user.name, avatarUrl: e.user.avatarUrl }
+          : undefined,
       })),
       projects,
       recentReports: recentReports.map((r) => ({

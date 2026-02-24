@@ -1,3 +1,9 @@
+export interface EntryAuthor {
+  readonly id: string;
+  readonly name: string;
+  readonly avatarUrl: string | null;
+}
+
 export interface Entry {
   readonly id: string;
   readonly content: string;
@@ -8,4 +14,5 @@ export interface Entry {
   readonly templateType: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  readonly author?: EntryAuthor;
 }

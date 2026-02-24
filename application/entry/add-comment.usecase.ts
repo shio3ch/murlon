@@ -22,5 +22,9 @@ export async function addCommentUseCase(
     throw new DomainError("コメントを入力してください");
   }
 
-  return await deps.commentRepository.save({ entryId: input.entryId, userId: input.userId, content });
+  return await deps.commentRepository.save({
+    entryId: input.entryId,
+    userId: input.userId,
+    content,
+  });
 }

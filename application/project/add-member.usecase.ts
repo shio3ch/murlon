@@ -1,7 +1,10 @@
 import { DomainError } from "../../domain/shared/domain-error.ts";
 import type { ProjectMember, ProjectRole } from "../../domain/project/project.entity.ts";
 import { getProjectRole } from "../../domain/project/project.entity.ts";
-import type { IProjectRepository, IProjectMemberRepository } from "../../domain/project/project.repository.ts";
+import type {
+  IProjectMemberRepository,
+  IProjectRepository,
+} from "../../domain/project/project.repository.ts";
 import type { IUserRepository } from "../../domain/user/user.repository.ts";
 
 export interface AddMemberInput {
