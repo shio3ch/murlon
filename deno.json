@@ -13,7 +13,9 @@
     "db:studio": "deno run -A npm:prisma@5.10.2 studio",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:ollama:pull": "docker compose exec ollama ollama pull gemma3"
+    "docker:ollama:pull": "docker compose exec ollama ollama pull gemma3",
+    "test": "deno test --ignore=routes/",
+    "test:watch": "deno test --ignore=routes/ --watch"
   },
   "lint": {
     "rules": {
