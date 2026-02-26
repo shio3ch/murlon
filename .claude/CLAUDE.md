@@ -44,6 +44,8 @@ deno task db:studio        # Prisma Studio起動
 deno task docker:up        # Docker Compose 起動（PostgreSQL + Ollama）
 deno task docker:down      # Docker Compose 停止
 deno task docker:ollama:pull  # Ollamaモデル（gemma3）ダウンロード
+deno task test             # テスト実行
+deno task test:watch       # ウォッチモードでテスト実行
 ```
 
 ## アーキテクチャ
@@ -86,6 +88,34 @@ AIプロバイダーは環境変数 `AI_PROVIDER` で切り替え可能:
 ### API統一レスポンス型
 
 `lib/types.ts` の `ApiResponse<T>` 型（`{ success, data?, error? }`）で統一。
+
+## テスト
+
+### 必須ルール
+
+- **機能の追加・変更時は、必ず対応するテストコードを実装すること**
+- **テストが全件パスすることを確認してから作業完了とすること**（`deno task test` で確認）
+- テストが失敗した場合は、原因を特定し修正してから次に進むこと
+
+### テストコマンド
+
+```bash
+deno task test              # テスト実行
+deno task test:watch        # ウォッチモードでテスト実行
+```
+
+### テスト方針
+
+- **テストフレームワーク**: Deno 標準の `Deno.test` + `$std/assert`
+- **ファイル命名**: ソースファイルと同階層に `*_test.ts` で配置（例: `create-entry.usecase.ts` → `create-entry.usecase_test.ts`）
+- **テスト対象の優先順位**:
+  1. ドメイン層（`domain/`）- 純粋なドメインロジック
+  2. アプリケーション層（`application/`）- ユースケースのビジネスロジック
+  3. lib層（`lib/`）- ユーティリティ関数
+- **リポジトリはスタブで差し替え** - DDDのインターフェース依存を活用し、DB接続なしで高速に実行
+- **AIプロバイダーもスタブ** - 外部API呼び出しなしでロジックをテスト
+- **エラーケースも必ずテスト** - バリデーション、権限チェック、存在チェックなど
+- `routes/` はテスト対象から除外（`--ignore=routes/`）
 
 ## コーディング規約
 
