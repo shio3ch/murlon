@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import TemplateManager from "../../islands/TemplateManager.tsx";
 import type { ReportTemplateRecord, ReportType } from "../../lib/types.ts";
 
@@ -48,27 +48,24 @@ export default function TemplatesPage({ data }: PageProps<TemplatesPageData>) {
   const { user, templates } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-2xl mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <div class="text-sm text-gray-500 mb-4">
-          <a href="/dashboard" class="hover:text-brand-600">設定</a>
-          <span class="mx-1">/</span>
-          <span class="text-gray-700">テンプレート管理</span>
-        </div>
+    <Layout user={user} maxWidth="2xl">
+      {/* Breadcrumb */}
+      <div class="text-sm text-gray-500 mb-4">
+        <a href="/dashboard" class="hover:text-brand-600">設定</a>
+        <span class="mx-1">/</span>
+        <span class="text-gray-700">テンプレート管理</span>
+      </div>
 
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">テンプレート管理</h1>
-          <p class="text-gray-500 mt-1">
-            レポート生成に使用するテンプレートを管理します
-          </p>
-        </div>
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">テンプレート管理</h1>
+        <p class="text-gray-500 mt-1">
+          レポート生成に使用するテンプレートを管理します
+        </p>
+      </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <TemplateManager initialTemplates={templates} />
-        </div>
-      </main>
-    </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <TemplateManager initialTemplates={templates} />
+      </div>
+    </Layout>
   );
 }

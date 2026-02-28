@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import StandupIsland from "../../islands/StandupIsland.tsx";
 
 interface StandupPageData {
@@ -38,18 +38,15 @@ export default function StandupPage({ data }: PageProps<StandupPageData>) {
   const { user, projects } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">スタンドアップ</h1>
-          <p class="text-gray-500 mt-1">
-            今日の分報からScrum形式のスタンドアップを自動生成します
-          </p>
-        </div>
+    <Layout user={user}>
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">スタンドアップ</h1>
+        <p class="text-gray-500 mt-1">
+          今日の分報からScrum形式のスタンドアップを自動生成します
+        </p>
+      </div>
 
-        <StandupIsland projects={projects} />
-      </main>
-    </div>
+      <StandupIsland projects={projects} />
+    </Layout>
   );
 }

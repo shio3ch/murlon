@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import ReportView from "../../islands/ReportView.tsx";
 import PdfExportButton from "../../islands/PdfExportButton.tsx";
 import type { EntryRecord, ReportRecord } from "../../lib/types.ts";
@@ -77,48 +77,45 @@ export default function DailyReportPage({ data }: PageProps<ReportPageData>) {
   const { user, report, entries, date } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">日報</h1>
-            <p class="text-gray-500 mt-1">
-              {new Date(date).toLocaleDateString("ja-JP", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                weekday: "long",
-              })}
-            </p>
-          </div>
-          <div class="flex gap-2">
-            <PdfExportButton title={`日報_${date}`} />
-            <a
-              href={`/reports/daily?date=${getPrevDate(date)}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              ← 前日
-            </a>
-            <a
-              href={`/reports/daily?date=${getNextDate(date)}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              翌日 →
-            </a>
-          </div>
+    <Layout user={user}>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">日報</h1>
+          <p class="text-gray-500 mt-1">
+            {new Date(date).toLocaleDateString("ja-JP", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              weekday: "long",
+            })}
+          </p>
         </div>
+        <div class="flex gap-2">
+          <PdfExportButton title={`日報_${date}`} />
+          <a
+            href={`/reports/daily?date=${getPrevDate(date)}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            ← 前日
+          </a>
+          <a
+            href={`/reports/daily?date=${getNextDate(date)}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            翌日 →
+          </a>
+        </div>
+      </div>
 
-        <ReportView
-          report={report}
-          entries={entries}
-          reportType="DAILY"
-          startDate={date}
-          endDate={date}
-          userId={user.id}
-        />
-      </main>
-    </div>
+      <ReportView
+        report={report}
+        entries={entries}
+        reportType="DAILY"
+        startDate={date}
+        endDate={date}
+        userId={user.id}
+      />
+    </Layout>
   );
 }
 

@@ -31,7 +31,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 静的アセットはCache First
+  // 静的アセットはStale-While-Revalidate
   if (
     url.pathname.startsWith("/icons/") ||
     url.pathname.endsWith(".css") ||
@@ -40,11 +40,12 @@ self.addEventListener("fetch", (event) => {
   ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
+        const fetched = fetch(event.request).then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           return response;
         });
+        return cached || fetched;
       }),
     );
     return;
