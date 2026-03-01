@@ -2,7 +2,7 @@ import { assertEquals, assertRejects } from "$std/assert/mod.ts";
 import { DomainError } from "../../domain/shared/domain-error.ts";
 import type { Entry } from "../../domain/entry/entry.entity.ts";
 import type { IEntryRepository } from "../../domain/entry/entry.repository.ts";
-import type { Comment } from "../../domain/comment/comment.entity.ts";
+
 import type { ICommentRepository } from "../../domain/comment/comment.repository.ts";
 import { addCommentUseCase } from "./add-comment.usecase.ts";
 

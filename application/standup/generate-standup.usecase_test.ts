@@ -8,10 +8,7 @@ import type { IStandupRepository } from "../../domain/standup/standup.repository
 import type { IProjectRepository } from "../../domain/project/project.repository.ts";
 import type { Project } from "../../domain/project/project.entity.ts";
 import type { AIProvider } from "../../infrastructure/ai/provider.ts";
-import {
-  generateStandupUseCase,
-  type GenerateStandupDeps,
-} from "./generate-standup.usecase.ts";
+import { type GenerateStandupDeps, generateStandupUseCase } from "./generate-standup.usecase.ts";
 
 const sampleEntries: Entry[] = [
   {
@@ -149,7 +146,7 @@ Deno.test("generateStandupUseCase - 既存のスタンドアップがあれば�
     }),
     standupRepository: stubStandupRepository({
       findByUserAndDate: () => Promise.resolve(existingStandup),
-      update: (id, content) => {
+      update: (_id, content) => {
         updatedContent = content;
         return Promise.resolve({
           ...existingStandup,

@@ -21,7 +21,9 @@ import type { Task } from "../domain/task/task.entity.ts";
 export type EntryRecord = Mutable<Entry>;
 export type ReportRecord = Mutable<Report>;
 // Project.members は必須だが一覧取得では含まないケースがあるため optional に
-export type ProjectRecord = Omit<Mutable<Project>, "members"> & { members?: Mutable<ProjectMember>[] };
+export type ProjectRecord = Omit<Mutable<Project>, "members"> & {
+  members?: Mutable<ProjectMember>[];
+};
 export type ProjectMemberRecord = Mutable<ProjectMember>;
 export type TaskRecord = Mutable<Task>;
 

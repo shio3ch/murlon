@@ -7,3 +7,22 @@
     font-family: "Noto Sans JP", sans-serif;
   }
 }
+
+/* 紅葉背景スクロールアニメーション */
+@keyframes bg-scroll {
+  to {
+    background-position-y: 1120px;
+  }
+}
+
+.falling-leaves {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("/leaves-pattern.svg");
+  background-repeat: repeat;
+  background-size: 700px 1120px;
+  opacity: 0.15;
+  animation: bg-scroll 40s linear infinite;
+}
