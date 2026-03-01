@@ -40,12 +40,22 @@ self.addEventListener("fetch", (event) => {
   ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        const fetched = fetch(event.request).then((response) => {
+        const fetchedPromise = fetch(event.request).then((response) => {
+          if (!response || !response.ok) {
+            return response;
+          }
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
+          return caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, clone))
+            .then(() => response);
         });
-        return cached || fetched;
+        event.waitUntil(
+          fetchedPromise.catch(() => {
+            // バックグラウンド更新失敗時は無視（レスポンスはキャッシュから提供済み）
+          }),
+        );
+        return cached || fetchedPromise;
       }),
     );
     return;
