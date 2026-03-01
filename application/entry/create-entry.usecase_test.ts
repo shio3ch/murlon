@@ -4,7 +4,7 @@ import type { Entry } from "../../domain/entry/entry.entity.ts";
 import type { IEntryRepository } from "../../domain/entry/entry.repository.ts";
 import type { IProjectRepository } from "../../domain/project/project.repository.ts";
 import type { Project } from "../../domain/project/project.entity.ts";
-import { createEntryUseCase, type CreateEntryDeps } from "./create-entry.usecase.ts";
+import { type CreateEntryDeps, createEntryUseCase } from "./create-entry.usecase.ts";
 
 function stubEntryRepository(overrides: Partial<IEntryRepository> = {}): IEntryRepository {
   return {
@@ -83,14 +83,12 @@ Deno.test("createEntryUseCase - 5000文字超はエラー", async () => {
 Deno.test("createEntryUseCase - テンション範囲外はエラー", async () => {
   const deps = createDeps();
   await assertRejects(
-    () =>
-      createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 0 }),
+    () => createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 0 }),
     DomainError,
     "テンションは1〜5",
   );
   await assertRejects(
-    () =>
-      createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 6 }),
+    () => createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 6 }),
     DomainError,
     "テンションは1〜5",
   );
@@ -99,8 +97,7 @@ Deno.test("createEntryUseCase - テンション範囲外はエラー", async () 
 Deno.test("createEntryUseCase - 小数のテンションはエラー", async () => {
   const deps = createDeps();
   await assertRejects(
-    () =>
-      createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 2.5 }),
+    () => createEntryUseCase(deps, { content: "テスト", userId: "user-1", tension: 2.5 }),
     DomainError,
     "テンションは1〜5",
   );

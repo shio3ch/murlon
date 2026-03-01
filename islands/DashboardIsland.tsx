@@ -93,7 +93,9 @@ function EntryItem({ entry, onDelete, onUpdate, projectName, currentUserId }: En
           )
           : null}
         <span
-          class={`w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center${entry.author?.avatarUrl ? " hidden" : ""}`}
+          class={`w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center${
+            entry.author?.avatarUrl ? " hidden" : ""
+          }`}
         >
           {(entry.author?.name ?? "?").charAt(0).toUpperCase()}
         </span>

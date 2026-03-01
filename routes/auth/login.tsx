@@ -52,7 +52,7 @@ export const handler: Handlers<LoginData> = {
 
 export default function Login({ data }: PageProps<LoginData>) {
   return (
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-blue-100">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-orange-100">
       <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-8">
           <h1 class="text-3xl font-bold text-brand-700">murlon</h1>

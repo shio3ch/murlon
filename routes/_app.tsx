@@ -7,7 +7,7 @@ export default function App({ Component }: PageProps) {
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#6366f1" />
+        <meta name="theme-color" content="#8b4f1f" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="murlon" />
@@ -21,7 +21,8 @@ export default function App({ Component }: PageProps) {
         />
         <script src="/sw-register.js" defer />
       </head>
-      <body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+      <body class="bg-amber-50/30 font-sans text-gray-900 min-h-screen">
+        <div class="falling-leaves" aria-hidden="true" />
         <Component />
         <PwaInstallPrompt />
       </body>

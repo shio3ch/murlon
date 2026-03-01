@@ -11,8 +11,8 @@ import type { IProjectRepository } from "../../domain/project/project.repository
 import type { Project } from "../../domain/project/project.entity.ts";
 import {
   listReactionsUseCase,
-  toggleReactionUseCase,
   type ToggleReactionDeps,
+  toggleReactionUseCase,
 } from "./toggle-reaction.usecase.ts";
 
 const sampleEntry: Entry = {

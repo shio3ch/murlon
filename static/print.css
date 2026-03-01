@@ -1,6 +1,6 @@
 @media print {
   /* ナビゲーション・ヘッダー・ボタン類を非表示 */
-  nav, header, .no-print, button, .print-hidden {
+  nav, header, .no-print, button, .print-hidden, .falling-leaves {
     display: none !important;
   }
 

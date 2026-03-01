@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../../lib/auth.ts";
 import { prisma } from "../../../lib/db.ts";
-import Header from "../../../components/Header.tsx";
+import Layout from "../../../components/Layout.tsx";
 import DashboardIsland from "../../../islands/DashboardIsland.tsx";
 import type {
   EntryRecord,
@@ -140,75 +140,72 @@ export default function ProjectDetailPage({ data }: PageProps<ProjectPageData>) 
   const { user, project, entries, isOwner, isAdmin } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        {/* Project header */}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-bold text-gray-900">{project.name}</h1>
-                <span
-                  class={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    visibilityColor(project.visibility)
-                  }`}
-                >
-                  {visibilityLabel(project.visibility)}
-                </span>
-              </div>
-              {project.description && <p class="text-gray-500 mt-2">{project.description}</p>}
-            </div>
+    <Layout user={user}>
+      {/* Project header */}
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-start justify-between">
+          <div>
             <div class="flex items-center gap-2">
-              <a
-                href={`/projects/${project.id}/tasks`}
-                class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+              <h1 class="text-2xl font-bold text-gray-900">{project.name}</h1>
+              <span
+                class={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  visibilityColor(project.visibility)
+                }`}
               >
-                タスク管理
-              </a>
-              <a
-                href={`/projects/${project.id}/reports`}
-                class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
-              >
-                レポート
-              </a>
-              {(isOwner || isAdmin) && (
-                <a
-                  href={`/projects/${project.id}/settings`}
-                  class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
-                >
-                  設定
-                </a>
-              )}
+                {visibilityLabel(project.visibility)}
+              </span>
             </div>
+            {project.description && <p class="text-gray-500 mt-2">{project.description}</p>}
           </div>
-
-          {/* Members */}
-          <div class="mt-4 pt-4 border-t border-gray-100">
-            <h2 class="text-sm font-semibold text-gray-500 mb-2">
-              メンバー ({project.members.length}人)
-            </h2>
-            <div class="flex flex-wrap gap-2">
-              {project.members.map((member) => (
-                <div
-                  key={member.id}
-                  class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5"
-                >
-                  <span class="text-sm text-gray-700">{member.user.name}</span>
-                  <span class="text-xs text-gray-400">{roleLabel(member.role)}</span>
-                </div>
-              ))}
-            </div>
+          <div class="flex items-center gap-2">
+            <a
+              href={`/projects/${project.id}/tasks`}
+              class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+            >
+              タスク管理
+            </a>
+            <a
+              href={`/projects/${project.id}/reports`}
+              class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+            >
+              レポート
+            </a>
+            {(isOwner || isAdmin) && (
+              <a
+                href={`/projects/${project.id}/settings`}
+                class="text-sm text-gray-500 hover:text-brand-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:border-brand-300 transition-colors"
+              >
+                設定
+              </a>
+            )}
           </div>
         </div>
 
-        {/* Entry form + timeline via DashboardIsland */}
-        <DashboardIsland
-          initialEntries={entries}
-          userId={user.id}
-          projectId={project.id}
-        />
-      </main>
-    </div>
+        {/* Members */}
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <h2 class="text-sm font-semibold text-gray-500 mb-2">
+            メンバー ({project.members.length}人)
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {project.members.map((member) => (
+              <div
+                key={member.id}
+                class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5"
+              >
+                <span class="text-sm text-gray-700">{member.user.name}</span>
+                <span class="text-xs text-gray-400">{roleLabel(member.role)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Entry form + timeline via DashboardIsland */}
+      <DashboardIsland
+        initialEntries={entries}
+        userId={user.id}
+        projectId={project.id}
+      />
+    </Layout>
   );
 }

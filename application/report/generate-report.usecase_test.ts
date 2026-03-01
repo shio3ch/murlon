@@ -7,10 +7,7 @@ import type { IReportRepository } from "../../domain/report/report.repository.ts
 import type { IProjectRepository } from "../../domain/project/project.repository.ts";
 import type { Project } from "../../domain/project/project.entity.ts";
 import type { AIProvider } from "../../infrastructure/ai/provider.ts";
-import {
-  generateReportUseCase,
-  type GenerateReportDeps,
-} from "./generate-report.usecase.ts";
+import { type GenerateReportDeps, generateReportUseCase } from "./generate-report.usecase.ts";
 
 const now = new Date();
 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());

@@ -21,7 +21,7 @@ export const handler: Handlers<HomeData> = {
 
 export default function Home({ data: _data }: PageProps<HomeData>) {
   return (
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen">
       <header class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <span class="text-2xl font-bold text-brand-600">murlon</span>

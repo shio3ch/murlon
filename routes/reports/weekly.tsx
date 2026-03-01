@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import ReportView from "../../islands/ReportView.tsx";
 import PdfExportButton from "../../islands/PdfExportButton.tsx";
 import type { EntryRecord, ReportRecord } from "../../lib/types.ts";
@@ -91,52 +91,49 @@ export default function WeeklyReportPage({ data }: PageProps<WeeklyReportData>) 
   const nextWeek = getNextWeek(weekStart);
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">週報</h1>
-            <p class="text-gray-500 mt-1">
-              {new Date(weekStart).toLocaleDateString("ja-JP", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-              {" 〜 "}
-              {new Date(weekEnd).toLocaleDateString("ja-JP", {
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          </div>
-          <div class="flex gap-2">
-            <PdfExportButton title={`週報_${weekStart}_${weekEnd}`} />
-            <a
-              href={`/reports/weekly?date=${prevWeek}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              ← 前週
-            </a>
-            <a
-              href={`/reports/weekly?date=${nextWeek}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              翌週 →
-            </a>
-          </div>
+    <Layout user={user}>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">週報</h1>
+          <p class="text-gray-500 mt-1">
+            {new Date(weekStart).toLocaleDateString("ja-JP", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+            {" 〜 "}
+            {new Date(weekEnd).toLocaleDateString("ja-JP", {
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
         </div>
+        <div class="flex gap-2">
+          <PdfExportButton title={`週報_${weekStart}_${weekEnd}`} />
+          <a
+            href={`/reports/weekly?date=${prevWeek}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            ← 前週
+          </a>
+          <a
+            href={`/reports/weekly?date=${nextWeek}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            翌週 →
+          </a>
+        </div>
+      </div>
 
-        <ReportView
-          report={report}
-          entries={entries}
-          reportType="WEEKLY"
-          startDate={weekStart}
-          endDate={weekEnd}
-          userId={user.id}
-        />
-      </main>
-    </div>
+      <ReportView
+        report={report}
+        entries={entries}
+        reportType="WEEKLY"
+        startDate={weekStart}
+        endDate={weekEnd}
+        userId={user.id}
+      />
+    </Layout>
   );
 }
 

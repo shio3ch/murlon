@@ -1,6 +1,6 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import InsightsIsland from "../../islands/InsightsIsland.tsx";
 
 interface InsightsPageData {
@@ -24,16 +24,13 @@ export default function InsightsPage({ data }: PageProps<InsightsPageData>) {
   const { user } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">インサイト</h1>
-          <p class="text-gray-500 mt-1">分報の活動状況と傾向分析</p>
-        </div>
+    <Layout user={user}>
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">インサイト</h1>
+        <p class="text-gray-500 mt-1">分報の活動状況と傾向分析</p>
+      </div>
 
-        <InsightsIsland />
-      </main>
-    </div>
+      <InsightsIsland />
+    </Layout>
   );
 }

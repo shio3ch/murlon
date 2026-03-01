@@ -1,7 +1,7 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
 import { prisma } from "../../lib/db.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 import ReportView from "../../islands/ReportView.tsx";
 import PdfExportButton from "../../islands/PdfExportButton.tsx";
 import type { EntryRecord, ReportRecord } from "../../lib/types.ts";
@@ -81,42 +81,39 @@ export default function MonthlyReportPage({ data }: PageProps<MonthlyReportData>
   const nextMonth = month === 12 ? { year: year + 1, month: 1 } : { year, month: month + 1 };
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">月報</h1>
-            <p class="text-gray-500 mt-1">
-              {year}年{month}月
-            </p>
-          </div>
-          <div class="flex gap-2">
-            <PdfExportButton title={`月報_${year}年${month}月`} />
-            <a
-              href={`/reports/monthly?year=${prevMonth.year}&month=${prevMonth.month}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              ← 前月
-            </a>
-            <a
-              href={`/reports/monthly?year=${nextMonth.year}&month=${nextMonth.month}`}
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
-            >
-              翌月 →
-            </a>
-          </div>
+    <Layout user={user}>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">月報</h1>
+          <p class="text-gray-500 mt-1">
+            {year}年{month}月
+          </p>
         </div>
+        <div class="flex gap-2">
+          <PdfExportButton title={`月報_${year}年${month}月`} />
+          <a
+            href={`/reports/monthly?year=${prevMonth.year}&month=${prevMonth.month}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            ← 前月
+          </a>
+          <a
+            href={`/reports/monthly?year=${nextMonth.year}&month=${nextMonth.month}`}
+            class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            翌月 →
+          </a>
+        </div>
+      </div>
 
-        <ReportView
-          report={report}
-          entries={entries}
-          reportType="MONTHLY"
-          startDate={monthStart}
-          endDate={monthEnd}
-          userId={user.id}
-        />
-      </main>
-    </div>
+      <ReportView
+        report={report}
+        entries={entries}
+        reportType="MONTHLY"
+        startDate={monthStart}
+        endDate={monthEnd}
+        userId={user.id}
+      />
+    </Layout>
   );
 }

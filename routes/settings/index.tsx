@@ -1,6 +1,6 @@
 import { type Handlers, type PageProps } from "$fresh/server.ts";
 import { getSession } from "../../lib/auth.ts";
-import Header from "../../components/Header.tsx";
+import Layout from "../../components/Layout.tsx";
 
 interface SettingsPageData {
   user: { name: string; email: string };
@@ -20,91 +20,88 @@ export default function SettingsPage({ data }: PageProps<SettingsPageData>) {
   const { user } = data;
 
   return (
-    <div class="min-h-screen bg-gray-50">
-      <Header user={user} />
-      <main class="max-w-2xl mx-auto px-4 py-8">
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold text-gray-900">設定</h1>
-          <p class="text-gray-500 mt-1">アカウントとアプリの設定を管理します</p>
-        </div>
+    <Layout user={user} maxWidth="2xl">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">設定</h1>
+        <p class="text-gray-500 mt-1">アカウントとアプリの設定を管理します</p>
+      </div>
 
-        <div class="space-y-4">
-          <a
-            href="/settings/profile"
-            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-semibold text-gray-900">プロフィール設定</h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                  名前やアバター画像を変更します
-                </p>
-              </div>
-              <span class="text-gray-400">→</span>
+      <div class="space-y-4">
+        <a
+          href="/settings/profile"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">プロフィール設定</h2>
+              <p class="text-sm text-gray-500 mt-0.5">
+                名前やアバター画像を変更します
+              </p>
             </div>
-          </a>
+            <span class="text-gray-400">→</span>
+          </div>
+        </a>
 
-          <a
-            href="/settings/templates"
-            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-semibold text-gray-900">テンプレート管理</h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                  レポート生成に使用するテンプレートを管理します
-                </p>
-              </div>
-              <span class="text-gray-400">→</span>
+        <a
+          href="/settings/templates"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">テンプレート管理</h2>
+              <p class="text-sm text-gray-500 mt-0.5">
+                レポート生成に使用するテンプレートを管理します
+              </p>
             </div>
-          </a>
+            <span class="text-gray-400">→</span>
+          </div>
+        </a>
 
-          <a
-            href="/settings/integrations"
-            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-semibold text-gray-900">外部連携</h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                  Slack・Discord へのレポート自動投稿を設定します
-                </p>
-              </div>
-              <span class="text-gray-400">→</span>
+        <a
+          href="/settings/integrations"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">外部連携</h2>
+              <p class="text-sm text-gray-500 mt-0.5">
+                Slack・Discord へのレポート自動投稿を設定します
+              </p>
             </div>
-          </a>
+            <span class="text-gray-400">→</span>
+          </div>
+        </a>
 
-          <a
-            href="/settings/github"
-            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-semibold text-gray-900">GitHub連携</h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                  GitHubのコミット履歴を分報として自動インポートします
-                </p>
-              </div>
-              <span class="text-gray-400">→</span>
+        <a
+          href="/settings/github"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">GitHub連携</h2>
+              <p class="text-sm text-gray-500 mt-0.5">
+                GitHubのコミット履歴を分報として自動インポートします
+              </p>
             </div>
-          </a>
+            <span class="text-gray-400">→</span>
+          </div>
+        </a>
 
-          <a
-            href="/settings/google-calendar"
-            class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-base font-semibold text-gray-900">Google Calendar連携</h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                  Google Calendarのスケジュールを分報作成時に参照できます
-                </p>
-              </div>
-              <span class="text-gray-400">→</span>
+        <a
+          href="/settings/google-calendar"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">Google Calendar連携</h2>
+              <p class="text-sm text-gray-500 mt-0.5">
+                Google Calendarのスケジュールを分報作成時に参照できます
+              </p>
             </div>
-          </a>
-        </div>
-      </main>
-    </div>
+            <span class="text-gray-400">→</span>
+          </div>
+        </a>
+      </div>
+    </Layout>
   );
 }

@@ -1,3 +1,5 @@
+import MobileMenu from "../islands/MobileMenu.tsx";
+
 interface HeaderProps {
   user: { name: string; email: string; avatarUrl?: string | null };
 }
@@ -6,7 +8,7 @@ export default function Header({ user }: HeaderProps) {
   const initial = user.name.charAt(0).toUpperCase();
 
   return (
-    <header class="bg-white border-b border-gray-200 shadow-sm">
+    <header class="bg-white border-b border-gray-200 shadow-sm relative z-10">
       <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <a href="/" class="flex items-center gap-2">
           <span class="text-2xl font-bold text-brand-600">murlon</span>
@@ -15,7 +17,7 @@ export default function Header({ user }: HeaderProps) {
           </span>
         </a>
 
-        <nav class="flex items-center gap-4">
+        <nav class="hidden md:flex items-center gap-4">
           <a
             href="/dashboard"
             class="text-sm text-gray-600 hover:text-brand-600 font-medium"
@@ -98,6 +100,8 @@ export default function Header({ user }: HeaderProps) {
             </form>
           </div>
         </nav>
+
+        <MobileMenu user={user} />
       </div>
     </header>
   );

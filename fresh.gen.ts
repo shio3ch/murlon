@@ -67,6 +67,7 @@ import * as $InsightsIsland from "./islands/InsightsIsland.tsx";
 import * as $IntegrationSettingsIsland from "./islands/IntegrationSettingsIsland.tsx";
 import * as $KanbanBoard from "./islands/KanbanBoard.tsx";
 import * as $MemberManager from "./islands/MemberManager.tsx";
+import * as $MobileMenu from "./islands/MobileMenu.tsx";
 import * as $PdfExportButton from "./islands/PdfExportButton.tsx";
 import * as $ProfileSettings from "./islands/ProfileSettings.tsx";
 import * as $ProjectDeleteButton from "./islands/ProjectDeleteButton.tsx";
@@ -147,6 +148,7 @@ const manifest = {
     "./islands/IntegrationSettingsIsland.tsx": $IntegrationSettingsIsland,
     "./islands/KanbanBoard.tsx": $KanbanBoard,
     "./islands/MemberManager.tsx": $MemberManager,
+    "./islands/MobileMenu.tsx": $MobileMenu,
     "./islands/PdfExportButton.tsx": $PdfExportButton,
     "./islands/ProfileSettings.tsx": $ProfileSettings,
     "./islands/ProjectDeleteButton.tsx": $ProjectDeleteButton,
